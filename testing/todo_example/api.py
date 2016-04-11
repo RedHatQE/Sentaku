@@ -1,6 +1,10 @@
+import attr
+
+
 class TodoApp(object):
     pass
 
 
+@attr.s
 class TodoUX(object):
-    pass
+    app = attr.ib()

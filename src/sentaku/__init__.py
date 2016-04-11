@@ -2,6 +2,11 @@ import attr
 import contextlib
 
 
+def fail_nested(*k, **kw):
+    raise RuntimeError(
+        'further nesting of implementation choice has been disabled')
+
+
 class ContextState(object):
     pass
 
@@ -18,13 +23,30 @@ class ContextRoot(object):
     def use(self, context):
         # todo: ressources and context
         old = self.current_context
-        self.current_context = context()
-        yield
+        self.current_context = context(root=self)
+        yield self.current_context
         self.current_context = old
 
+    @contextlib.contextmanager
+    def use_single(self, context):
+        """enter a context where no nested configuration is possible"""
+        # materealize before turning it unusable
+        manager = self.use(context)
+        try:
+            self.use = fail_nested
+            with manager as ctx:
+                yield ctx
+        finally:
+            del self.use
 
+
+@attr.s
 class ContextObject(object):
-    root = attr.ib(repr=False)
+    parent = attr.ib(repr=False)
+
+    @property
+    def root(self):
+        return self.parent.root
 
 
 class ContextCollection(ContextObject):
@@ -42,6 +64,7 @@ class MethodSelector(object):
             assert key not in self.implementations
             self.implementations[key] = func
             return self
+
         register_selector_decorator.key = key
         return register_selector_decorator
 
