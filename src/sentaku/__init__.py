@@ -49,7 +49,9 @@ class ContextObject(object):
         return self.parent.root
 
 
+@attr.s
 class ContextCollection(ContextObject):
+
     pass
 
 

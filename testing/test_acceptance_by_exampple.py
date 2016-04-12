@@ -13,5 +13,6 @@ def test_simple(api, impl):
     with api.use(impl):
         collection = api.create_collection(name='test')
         item = collection.create_item(name='buy ham')
+        # assert collection.all()[0] == item
         item.completed = True
         collection.clear_completed()
