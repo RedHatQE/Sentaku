@@ -18,6 +18,7 @@ setup(name="sentaku",
       package_dir={'': 'src'},
       install_requires=[
           'attrs',
+          'cached_property',
       ],
       setup_requires=[
           'setuptools_scm',

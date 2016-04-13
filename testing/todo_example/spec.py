@@ -5,14 +5,17 @@ from . import api
 
 
 class ViaAPI(sentaku.ContextState):
-    def __init__(self, root):
-        self.app = root.app
+    def __init__(self, parent):
+        super(ViaAPI, self).__init__(parent)
+        self.app = self.root.app
 
 
 class ViaUX(sentaku.ContextState):
-    def __init__(self, root):
-        with root.use_single(ViaAPI) as ctx:
-            self.ux = api.TodoUX(ctx.app)
+    NEEDS = (ViaAPI, )
+
+    def __init__(self, parent):
+        super(ViaUX, self).__init__(parent)
+        self.ux = api.TodoUX(parent.get_or_create(ViaAPI).app)
 
 
 @attr.s

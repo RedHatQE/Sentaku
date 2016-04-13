@@ -1,58 +1,83 @@
-import attr
 import contextlib
-
-
-def fail_nested(*k, **kw):
-    raise RuntimeError(
-        'further nesting of implementation choice has been disabled')
-
-
-class ContextState(object):
-    pass
+import attr
+from cached_property import cached_property
+from .implementations_stack import ChainCtx
+from .utils import alias
 
 
 @attr.s
 class ContextRoot(object):
-    current_context = attr.ib(default=None)
+    context_chains = attr.ib(default=attr.Factory(ChainCtx), repr=False)
+
+    @cached_property
+    def context_states(self):
+        return ContextStates(self)
+
+    current_context = alias('context_chains.current')
 
     @property
     def root(self):
         return self
 
     @contextlib.contextmanager
-    def use(self, context):
-        # todo: ressources and context
-        old = self.current_context
-        self.current_context = context(root=self)
-        yield self.current_context
-        self.current_context = old
-
-    @contextlib.contextmanager
-    def use_single(self, context):
-        """enter a context where no nested configuration is possible"""
-        # materealize before turning it unusable
-        manager = self.use(context)
-        try:
-            self.use = fail_nested
-            with manager as ctx:
-                yield ctx
-        finally:
-            del self.use
+    def use(self, *context_types, **kw):
+        if kw:
+            assert len(kw) == 1 and 'frozen' in kw
+        with self.context_chains.pushed(context_types, **kw):
+            yield self.context_states.get_or_create(self.current_context[0])
 
 
 @attr.s
 class ContextObject(object):
     parent = attr.ib(repr=False)
 
-    @property
-    def root(self):
-        return self.parent.root
+    root = alias('parent.root')
+
+
+@attr.s
+class ContextState(ContextObject):
+    NEEDS = ()
+
+
+@attr.s
+class ContextStates(ContextObject):
+    _in_creation = attr.ib(repr=False, default=attr.Factory(set))
+    elements = attr.ib(repr=False, default=attr.Factory(dict))
+
+    def get_or_create(self, state_type):
+        assert state_type not in self._in_creation, 'dependency loop'
+        self._in_creation.add(state_type)
+        try:
+            for requirement in state_type.NEEDS:
+                self.get_or_create(requirement)
+            elem = self.elements[state_type] = state_type(self)
+        finally:
+            self._in_creation.discard(state_type)
+        return elem
 
 
 @attr.s
 class ContextCollection(ContextObject):
-
     pass
+
+
+@attr.s
+class SelectedMethod(object):
+    instance = attr.ib()
+    selector = attr.ib()
+
+    def __call__(self, *k, **kw):
+        inst = self.instance
+        chose_from = inst.root.current_context
+        for choice in chose_from:
+            implementation = self.selector.implementations.get(choice)
+            if implementation is not None:
+                break
+        else:
+            raise LookupError(**chose_from)
+
+        with inst.root.use(choice, frozen=True):
+            return implementation.__get__(inst, type(inst))(*k, **kw)
 
 
 @attr.s
@@ -60,8 +85,6 @@ class MethodSelector(object):
     implementations = attr.ib(default=attr.Factory(dict))
 
     def __call__(self, key):
-        assert key not in self.implementations
-
         def register_selector_decorator(func):
             assert key not in self.implementations
             self.implementations[key] = func
@@ -73,7 +96,4 @@ class MethodSelector(object):
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        # todo: fallbacks
-        key = type(instance.root.current_context)
-        implementation = self.implementations[key]
-        return implementation.__get__(instance, owner)
+        return SelectedMethod(instance=instance, selector=self)
