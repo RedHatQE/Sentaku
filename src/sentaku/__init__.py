@@ -29,6 +29,7 @@ class ContextRoot(object):
 
 @attr.s
 class ContextObject(object):
+    NEEDS = ()
     parent = attr.ib(repr=False)
 
     root = alias('parent.root')
@@ -45,9 +46,17 @@ class ContextStates(ContextObject):
     elements = attr.ib(repr=False, default=attr.Factory(dict))
 
     def get_or_create(self, state_type):
+        existing = self.elements.get(state_type)
+        if existing is not None:
+            return existing
+        return self.create_and_record(state_type)
+
+    def create_and_record(self, state_type):
         assert state_type not in self._in_creation, 'dependency loop'
+
         self._in_creation.add(state_type)
         try:
+
             for requirement in state_type.NEEDS:
                 self.get_or_create(requirement)
             elem = self.elements[state_type] = state_type(self)
