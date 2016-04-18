@@ -1,19 +1,21 @@
 import contextlib
 import attr
-from cached_property import cached_property
 from .implementations_stack import ChainCtx
 from .utils import alias
 
 
 @attr.s
 class ContextRoot(object):
+    context_states = attr.ib()
+
     context_chains = attr.ib(default=attr.Factory(ChainCtx), repr=False)
 
-    @cached_property
-    def context_states(self):
-        return ContextStates(self)
-
     current_context = alias('context_chains.current')
+
+    @classmethod
+    def from_states(cls, states):
+        states = {type(s): s for s in states}
+        return cls(context_states=states)
 
     @property
     def root(self):
@@ -24,45 +26,19 @@ class ContextRoot(object):
         if kw:
             assert len(kw) == 1 and 'frozen' in kw
         with self.context_chains.pushed(context_types, **kw):
-            yield self.context_states.get_or_create(self.current_context[0])
+            yield self.context_states[self.current_context[0]]
 
 
 @attr.s
 class ContextObject(object):
-    NEEDS = ()
     parent = attr.ib(repr=False)
 
     root = alias('parent.root')
 
 
 @attr.s
-class ContextState(ContextObject):
-    NEEDS = ()
-
-
-@attr.s
-class ContextStates(ContextObject):
-    _in_creation = attr.ib(repr=False, default=attr.Factory(set))
-    elements = attr.ib(repr=False, default=attr.Factory(dict))
-
-    def get_or_create(self, state_type):
-        existing = self.elements.get(state_type)
-        if existing is not None:
-            return existing
-        return self.create_and_record(state_type)
-
-    def create_and_record(self, state_type):
-        assert state_type not in self._in_creation, 'dependency loop'
-
-        self._in_creation.add(state_type)
-        try:
-
-            for requirement in state_type.NEEDS:
-                self.get_or_create(requirement)
-            elem = self.elements[state_type] = state_type(self)
-        finally:
-            self._in_creation.discard(state_type)
-        return elem
+class ContextState(object):
+    pass
 
 
 @attr.s

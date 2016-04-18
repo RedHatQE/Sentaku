@@ -4,8 +4,7 @@ from todo_example import spec, api as todo_api
 
 @pytest.fixture
 def api():
-
-    return spec.TodoApi(app=todo_api.TodoApp())
+    return spec.TodoApi.from_api(todo_api.TodoApp())
 
 
 @pytest.mark.parametrize('impl', [spec.ViaAPI, spec.ViaUX])

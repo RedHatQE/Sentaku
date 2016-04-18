@@ -1,21 +1,20 @@
 import attr
 import sentaku
+from .api import TodoUX
 
-from . import api
 
-
+@attr.s
 class ViaAPI(sentaku.ContextState):
-    def __init__(self, parent):
-        super(ViaAPI, self).__init__(parent)
-        self.app = self.root.app
+    api = attr.ib()
 
 
+@attr.s
 class ViaUX(sentaku.ContextState):
-    NEEDS = (ViaAPI, )
+    ux = attr.ib()
 
-    def __init__(self, parent):
-        super(ViaUX, self).__init__(parent)
-        self.ux = api.TodoUX(parent.get_or_create(ViaAPI).app)
+    @classmethod
+    def from_api(cls, api):
+        return cls(ux=TodoUX(api))
 
 
 @attr.s
@@ -50,7 +49,11 @@ class TodoCollection(sentaku.ContextCollection):
 
 @attr.s
 class TodoApi(sentaku.ContextRoot):
-    app = attr.ib(default=None)
+    @classmethod
+    def from_api(cls, api):
+        via_api = ViaAPI(api)
+        via_ux = ViaUX.from_api(api)
+        return cls.from_states([via_api, via_ux])
 
     create_collection = sentaku.MethodSelector()
 
