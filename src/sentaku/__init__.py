@@ -12,6 +12,10 @@ class ContextRoot(object):
 
     current_context = alias('context_chains.current')
 
+    @property
+    def impl(self):
+        return self.context_states[self.current_context[0]]
+
     @classmethod
     def from_states(cls, states):
         states = {type(s): s for s in states}
@@ -26,7 +30,7 @@ class ContextRoot(object):
         if kw:
             assert len(kw) == 1 and 'frozen' in kw
         with self.context_chains.pushed(context_types, **kw):
-            yield self.context_states[self.current_context[0]]
+            yield self.impl
 
 
 @attr.s
@@ -34,6 +38,7 @@ class ContextObject(object):
     parent = attr.ib(repr=False)
 
     root = alias('parent.root')
+    impl = alias('root.impl')
 
 
 @attr.s
@@ -59,7 +64,7 @@ class SelectedMethod(object):
             if implementation is not None:
                 break
         else:
-            raise LookupError(**chose_from)
+            raise LookupError(chose_from, self.selector.implementations.keys())
 
         with inst.root.use(choice, frozen=True):
             return implementation.__get__(inst, type(inst))(*k, **kw)

@@ -15,3 +15,4 @@ def test_simple(api, impl):
         # assert collection.all()[0] == item
         item.completed = True
         collection.clear_completed()
+        assert collection.get_by(name='buy ham') is None
