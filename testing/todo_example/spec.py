@@ -5,20 +5,26 @@ from .api import TodoUX
 
 @attr.s
 class ViaAPI(sentaku.ContextState):
+    """contextstate for controlling via api"""
     api = attr.ib()
 
 
 @attr.s
 class ViaUX(sentaku.ContextState):
+    """contextstate for controlling via ux layer"""
     ux = attr.ib()
 
     @classmethod
     def from_api(cls, api):
+        """creates a ux for the given api before
+
+        returning the ux contextstate"""
         return cls(ux=TodoUX(api))
 
 
 @attr.s
 class TodoItem(sentaku.ContextObject):
+    """domain object describing a todo list element"""
     name = attr.ib()
 
     @property
@@ -48,6 +54,7 @@ class TodoItem(sentaku.ContextObject):
 
 @attr.s
 class TodoCollection(sentaku.ContextCollection):
+    """domain object describing a todo list"""
     name = attr.ib()
 
     create_item = sentaku.MethodSelector()
@@ -103,8 +110,14 @@ class TodoCollection(sentaku.ContextCollection):
 
 @attr.s
 class TodoApi(sentaku.ContextRoot):
+    """domain root describing the todo list manager"""
+
     @classmethod
     def from_api(cls, api):
+        """
+        create context states for controll via api and controll via ux
+        and return a domain root able to use them
+        """
         via_api = ViaAPI(api)
         via_ux = ViaUX.from_api(api)
         return cls.from_states([via_api, via_ux])

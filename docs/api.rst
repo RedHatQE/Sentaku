@@ -1,0 +1,6 @@
+Api
+====
+
+
+..automodule:: sentaku
+  :members:
