@@ -1,6 +1,6 @@
 import attr
 import sentaku
-from .api import TodoUX
+from .ux import TodoUX
 
 
 @attr.s
