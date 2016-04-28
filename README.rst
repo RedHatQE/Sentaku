@@ -1,6 +1,9 @@
 About Sentaku
 ================
 
+.. image:: https://readthedocs.org/projects/sentaku/badge/?version=latest
+
+
 Sentaku provides primitives to model domain objects that are
 exposed via different interfaces to facilitate the same operations.
 
