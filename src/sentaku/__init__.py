@@ -46,6 +46,7 @@ class ContextRoot(object):
 @attr.s
 class ContextObject(object):
     """Base class for all domain objects"""
+    parent = attr.ib()
     root = alias('parent.root')
     impl = alias('root.impl')
 
