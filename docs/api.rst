@@ -2,5 +2,5 @@ Api
 ====
 
 
-..automodule:: sentaku
+.. automodule:: sentaku
   :members:
