@@ -7,9 +7,9 @@ About Sentaku
 .. image:: https://readthedocs.org/projects/sentaku/badge/?version=latest
   :target: http://sentaku.readthedocs.io/en/latest/
 
-  .. image:: https://landscape.io/github/RonnyPfannschmidt/Sentaku/master/landscape.svg?style=flat
-     :target: https://landscape.io/github/RonnyPfannschmidt/Sentaku/master
-     :alt: Code Health
+.. image:: https://landscape.io/github/RonnyPfannschmidt/Sentaku/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/RonnyPfannschmidt/Sentaku/master
+   :alt: Code Health
 
 Sentaku provides primitives to describe the structure of your Application
 and to implement different ways to perform actions with it.
