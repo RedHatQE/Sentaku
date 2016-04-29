@@ -90,14 +90,15 @@ class SelectedMethod(object):
         raise LookupError(chose_from, self.selector.implementations.keys())
 
 
-@attr.s
 class MethodSelector(object):
-    """descriptor for domain actions
-
-    registry for implementation actions that implement the domain actions
+    """descriptor used to register action implementations
     """
 
-    implementations = attr.ib(default=attr.Factory(dict))
+    def __init__(self):
+        self.implementations = {}
+
+    def __repr__(self):
+        return '<MethodSelector %r>' % (self.implementations.keys(), )
 
     def __call__(self, key):
         def register_selector_decorator(func):
