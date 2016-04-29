@@ -52,8 +52,14 @@ class ContextObject(object):
 
 
 @attr.s
-class ContextState(object):
-    """base class for implementation backends"""
+class ApplicationImplementation(object):
+    """Base class for holders of application state
+
+    subclasses of this class will be used to hold data necessary
+    for one particular implementation
+
+    they are also used to name and refer to implementations for selection
+    """
     pass
 
 

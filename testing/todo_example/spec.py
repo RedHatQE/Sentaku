@@ -4,21 +4,21 @@ from .ux import TodoUX
 
 
 @attr.s
-class ViaAPI(sentaku.ContextState):
-    """contextstate for controlling via api"""
+class ViaAPI(sentaku.ApplicationImplementation):
+    """access to the core api of the application"""
     api = attr.ib()
 
 
 @attr.s
-class ViaUX(sentaku.ContextState):
-    """contextstate for controlling via ux layer"""
+class ViaUX(sentaku.ApplicationImplementation):
+    """access to the application via the basic api of the pseudo-ux"""
     ux = attr.ib()
 
     @classmethod
     def from_api(cls, api):
         """creates a ux for the given api before
 
-        returning the ux contextstate"""
+        returning the implementation holder"""
         return cls(ux=TodoUX(api))
 
 
