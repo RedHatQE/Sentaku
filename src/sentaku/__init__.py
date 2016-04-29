@@ -87,8 +87,7 @@ class SelectedMethod(object):
             if implementation is not None:
                 with inst.root.use(choice, frozen=True):
                     return implementation.__get__(inst, type(inst))(*k, **kw)
-        else:
-            raise LookupError(chose_from, self.selector.implementations.keys())
+        raise LookupError(chose_from, self.selector.implementations.keys())
 
 
 @attr.s
