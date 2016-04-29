@@ -1,26 +1,17 @@
-import attr
-from attr.validators import instance_of
-
-
-@attr.s
 class TodoElement(object):
     """
     Element of a todo list
-
-    .. attribute:: name
-    .. attribute:: completed
-
-        true when the element was completed
     """
-    name = attr.ib(validator=instance_of(str))
-    completed = attr.ib(default=False, validator=instance_of(bool))
+    def __init__(self, name, completed=False):
+        self.name = name
+        self.completed = completed
 
 
-@attr.s
 class TodoList(object):
     """a named todolist"""
-    name = attr.ib(validator=instance_of(str))
-    items = attr.ib(default=attr.Factory(list))
+    def __init__(self, name, elements=()):
+        self.name = name
+        self.items = list(elements)
 
     def get_by(self, name):
         """get element by name"""
@@ -42,19 +33,22 @@ class TodoList(object):
         self.items = [i for i in self.items if not i.completed]
 
 
-@attr.s
 class TodoApp(object):
     """
     A Basic Todo List Storage
 
-    .. attribute:: collection
-
-        the todo collection
     """
+
+    def __init__(self):
+        #: the todo collections
+        self.collections = []
+
+    def __repr__(self):
+        return '<TodoApp %r>' % (sorted(x.name for x in self.collections))
 
     def get_by(self, name):
         """get a todo list by name"""
-        for item in self.collection:
+        for item in self.collections:
             if item.name == name:
                 return item
 
@@ -62,7 +56,5 @@ class TodoApp(object):
         """create a new named todo list"""
         assert self.get_by(name) is None
         e = TodoList(name=name)
-        self.collection.append(e)
+        self.collections.append(e)
         return e
-
-    collection = attr.ib(default=attr.Factory(list))
