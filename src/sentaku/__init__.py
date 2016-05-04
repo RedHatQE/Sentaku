@@ -4,31 +4,29 @@ from .implementations_stack import ChainCtx
 from .utils import alias
 
 
-@attr.s
-class ContextRoot(object):
-    """Base class for root Domain descriptions
+class ApplicationDescription(object):
+    """Base class for application descriptions
 
-    this is the entrypoint of every domain describing an application
-    it ties together the different implementation tools,
-    implementation selection and acces to domain objects
+    this is the starting point for any description of the concepts
+    fueling and application and linking together the different implementations
+    of those concepts
     """
 
-    context_states = attr.ib()
-
-    context_chains = attr.ib(default=attr.Factory(ChainCtx), repr=False)
-
-    current_context = alias('context_chains.current')
+    def __init__(self, implementations):
+        self._implementations = implementations
+        self._chains = ChainCtx()
 
     @property
     def impl(self):
-        return self.context_states[self.current_context[0]]
+        """the current active implementation"""
+        return self._implementations[self._chains.current[0]]
 
     @classmethod
-    def from_states(cls, states):
-        """utility to create a context domain
+    def from_implementations(cls, implementations):
+        """utility to create the application description
         by passing instances of the different implementations"""
-        states = {type(s): s for s in states}
-        return cls(context_states=states)
+        implementations = {type(s): s for s in implementations}
+        return cls(implementations=implementations)
 
     @property
     def root(self):
@@ -39,7 +37,7 @@ class ContextRoot(object):
     def use(self, *context_types, **kw):
         if kw:
             assert len(kw) == 1 and 'frozen' in kw
-        with self.context_chains.pushed(context_types, **kw):
+        with self._chains.pushed(context_types, frozen=kw.get('frozen', False)):
             yield self.impl
 
 
@@ -81,7 +79,7 @@ class SelectedMethod(object):
 
     def __call__(self, *k, **kw):
         inst = self.instance
-        chose_from = inst.root.current_context
+        chose_from = inst.root._chains.current
         for choice in chose_from:
             implementation = self.selector.implementations.get(choice)
             if implementation is not None:
@@ -90,7 +88,7 @@ class SelectedMethod(object):
         raise LookupError(chose_from, self.selector.implementations.keys())
 
 
-class MethodSelector(object):
+class ImplementationCooser(object):
     """descriptor used to register action implementations
     """
 
@@ -98,7 +96,8 @@ class MethodSelector(object):
         self.implementations = {}
 
     def __repr__(self):
-        return '<MethodSelector %r>' % (self.implementations.keys(), )
+        return '<ImplementationCooser %r>' % (
+            sorted(self.implementations.keys()), )
 
     def __call__(self, key):
         def register_selector_decorator(func):

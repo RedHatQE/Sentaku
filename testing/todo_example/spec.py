@@ -31,7 +31,7 @@ class TodoItem(sentaku.ContextObject):
     def completed(self):
         raise NotImplementedError
 
-    set_completion_state = sentaku.MethodSelector()
+    set_completion_state = sentaku.ImplementationCooser()
 
     @set_completion_state(ViaAPI)
     def set_completion_state(self, value):
@@ -57,7 +57,7 @@ class TodoCollection(sentaku.ContextCollection):
     """domain object describing a todo list"""
     name = attr.ib()
 
-    create_item = sentaku.MethodSelector()
+    create_item = sentaku.ImplementationCooser()
 
     @create_item(ViaAPI)
     def create_item(self, name):
@@ -75,7 +75,7 @@ class TodoCollection(sentaku.ContextCollection):
         collection.create_item(name)
         return TodoItem(self, name=name)
 
-    get_by = sentaku.MethodSelector()
+    get_by = sentaku.ImplementationCooser()
 
     @get_by(ViaAPI)
     def get_by(self, name):
@@ -93,7 +93,7 @@ class TodoCollection(sentaku.ContextCollection):
         if elem is not None:
             return TodoItem(self, name=name)
 
-    clear_completed = sentaku.MethodSelector()
+    clear_completed = sentaku.ImplementationCooser()
 
     @clear_completed(ViaAPI)
     def clear_completed(self):
@@ -108,21 +108,20 @@ class TodoCollection(sentaku.ContextCollection):
         ux_list.clear_completed()
 
 
-@attr.s
-class TodoApi(sentaku.ContextRoot):
-    """domain root describing the todo list manager"""
+class TodoApi(sentaku.ApplicationDescription):
+    """example description for a simple todo application"""
 
     @classmethod
     def from_api(cls, api):
         """
-        create context states for controll via api and controll via ux
-        and return a domain root able to use them
+        create an application description for the todo app,
+        that based on the api can use either tha api or the ux for interaction
         """
         via_api = ViaAPI(api)
         via_ux = ViaUX.from_api(api)
-        return cls.from_states([via_api, via_ux])
+        return cls.from_implementations([via_api, via_ux])
 
-    create_collection = sentaku.MethodSelector()
+    create_collection = sentaku.ImplementationCooser()
 
     @create_collection(ViaAPI)
     def create_collection(self, name):
