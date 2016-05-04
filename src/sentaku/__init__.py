@@ -99,7 +99,7 @@ class ImplementationCooser(object):
         return '<ImplementationCooser %r>' % (
             sorted(self.implementations.keys()), )
 
-    def __call__(self, key):
+    def implemented_for(self, key):
         def register_selector_decorator(func):
             assert key not in self.implementations
             self.implementations[key] = func
