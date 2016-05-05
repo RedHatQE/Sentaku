@@ -12,6 +12,7 @@ About Sentaku
    :alt: Code Health
 
 Sentaku is a experiment for acceptance testing.
+
 Sentaku provides a easy way to describe applications and use-cases
 while being able to choose implementations and fall back between them.
 
