@@ -1,5 +1,5 @@
 About Sentaku
-================
+==============
 
 .. image:: https://travis-ci.org/RonnyPfannschmidt/Sentaku.svg?branch=master
     :target: https://travis-ci.org/RonnyPfannschmidt/Sentaku
@@ -11,27 +11,23 @@ About Sentaku
    :target: https://landscape.io/github/RonnyPfannschmidt/Sentaku/master
    :alt: Code Health
 
-Sentaku provides primitives to describe the structure of your Application
-and to implement different ways to perform actions with it.
-
+Sentaku is a experiment for acceptance testing.
+Sentaku provides a easy way to describe applications and use-cases
+while being able to choose implementations and fall back between them.
 
 This helps to implement test setup/tear-down and execution.
 
-A uniform API us used to describe the actions,
-and a python context.manager allows to configure how
-the description is mapped to
+A uniform API us used to describe the behavior,
+and a the tests later can decide when to use what implementations.
 
-
-A typical use case is Testing your "typical" modern application.
+A typical use case is Testing your modern html5 application.
 Such an application usually consists of different layers.
 
 1. the internal backend api
 2. a rest api
 3. a rich fronend
 
-Sentaku aims to run integration and system tests against all layers
-and the ability to fall back to different layers
-in case one of the layers is missing an implementation of functionality.
-
-It also aims to support using fast layers for setup/teardown
-and user-facing layers for test bodies
+When doing test setup/teardown it is
+desirable to run against the fast backend api or rest API,
+while when running the actual acceptance/system tests
+it is more desirable to run against the rich user interface or the rest API
