@@ -1,7 +1,5 @@
 import contextlib
-import attr
 from .implementations_stack import ChainCtx
-from .utils import alias
 
 
 class ApplicationDescription(object):
@@ -41,17 +39,24 @@ class ApplicationDescription(object):
             yield self.impl
 
 
-@attr.s
-class ContextObject(object):
-    """Base class for all domain objects"""
-    parent = attr.ib()
-    root = alias('parent.root')
-    impl = alias('root.impl')
+class Element(object):
+    """Base class for all application elements"""
+    def __init__(self, parent):
+        self.parent = parent
+
+    @property
+    def root(self):
+        """alias to get the root application description"""
+        return self.parent.root
+
+    @property
+    def impl(self):
+        """shortcut to get the currently active application implementation"""
+        return self.root.impl
 
 
-@attr.s
 class ApplicationImplementation(object):
-    """Base class for holders of application state
+    """Base class for implementations
 
     subclasses of this class will be used to hold data necessary
     for one particular implementation
@@ -61,21 +66,25 @@ class ApplicationImplementation(object):
     pass
 
 
-@attr.s
-class ContextCollection(ContextObject):
-    """base class for collections in the domain
+class Collection(Element):
+    """base class for collections in the application
 
     :todo: generic helpers for querying
     """
 
 
-@attr.s
-class SelectedMethod(object):
-    """bound method equivalent for method selectors
-    will lazy-look-up the implementation and freeze the context on invocation
+class _ImplementationBindingMethod(object):
+    """bound method equivalent for :class:`ImplementationCooser`
+
+    on call it:
+
+    * looks up the implementation
+    * freezes the context
+    * calls the actual implementation
     """
-    instance = attr.ib()
-    selector = attr.ib()
+    def __init__(self, instance, selector):
+        self.instance = instance
+        self.selector = selector
 
     def __call__(self, *k, **kw):
         inst = self.instance
@@ -88,8 +97,12 @@ class SelectedMethod(object):
         raise LookupError(chose_from, self.selector.implementations.keys())
 
 
-class ImplementationCooser(object):
-    """descriptor used to register action implementations
+class ImplementationRegistry(object):
+    """this registry for implementations
+    also acts as descriptor picking a currently valid implementation
+
+    .. todo:: find a better name
+
     """
 
     def __init__(self):
@@ -100,7 +113,9 @@ class ImplementationCooser(object):
             sorted(self.implementations.keys()), )
 
     def implemented_for(self, key):
+        """decorator to register a new implementation"""
         def register_selector_decorator(func):
+            assert not isinstance(func, type(self))
             assert key not in self.implementations
             self.implementations[key] = func
             return self
@@ -111,4 +126,4 @@ class ImplementationCooser(object):
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        return SelectedMethod(instance=instance, selector=self)
+        return _ImplementationBindingMethod(instance=instance, selector=self)

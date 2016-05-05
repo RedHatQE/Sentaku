@@ -22,16 +22,17 @@ class ViaUX(sentaku.ApplicationImplementation):
         return cls(ux=TodoUX(api))
 
 
-@attr.s
-class TodoItem(sentaku.ContextObject):
-    """domain object describing a todo list element"""
-    name = attr.ib()
+class TodoItem(sentaku.Element):
+    """describing a todo list element"""
+    def __init__(self, parent, name):
+        super(TodoItem, self).__init__(parent=parent)
+        self.name = name
 
     @property
     def completed(self):
         raise NotImplementedError
 
-    set_completion_state = sentaku.ImplementationCooser()
+    set_completion_state = sentaku.ImplementationRegistry()
 
     @set_completion_state.implemented_for(ViaAPI)
     def set_completion_state(self, value):
@@ -52,12 +53,13 @@ class TodoItem(sentaku.ContextObject):
         self.set_completion_state(value)
 
 
-@attr.s
-class TodoCollection(sentaku.ContextCollection):
+class TodoCollection(sentaku.Collection):
     """domain object describing a todo list"""
-    name = attr.ib()
+    def __init__(self, parent, name):
+        super(TodoCollection, self).__init__(parent=parent)
+        self.name = name
 
-    create_item = sentaku.ImplementationCooser()
+    create_item = sentaku.ImplementationRegistry()
 
     @create_item.implemented_for(ViaAPI)
     def create_item(self, name):
@@ -75,7 +77,7 @@ class TodoCollection(sentaku.ContextCollection):
         collection.create_item(name)
         return TodoItem(self, name=name)
 
-    get_by = sentaku.ImplementationCooser()
+    get_by = sentaku.ImplementationRegistry()
 
     @get_by.implemented_for(ViaAPI)
     def get_by(self, name):
@@ -93,7 +95,7 @@ class TodoCollection(sentaku.ContextCollection):
         if elem is not None:
             return TodoItem(self, name=name)
 
-    clear_completed = sentaku.ImplementationCooser()
+    clear_completed = sentaku.ImplementationRegistry()
 
     @clear_completed.implemented_for(ViaAPI)
     def clear_completed(self):
@@ -121,7 +123,7 @@ class TodoApi(sentaku.ApplicationDescription):
         via_ux = ViaUX.from_api(api)
         return cls.from_implementations([via_api, via_ux])
 
-    create_collection = sentaku.ImplementationCooser()
+    create_collection = sentaku.ImplementationRegistry()
 
     @create_collection.implemented_for(ViaAPI)
     def create_collection(self, name):
