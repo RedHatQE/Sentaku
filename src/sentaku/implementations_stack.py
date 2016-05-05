@@ -6,13 +6,13 @@ based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
 from contextlib import contextmanager
+LIMIT = 20
 
 
 class ImplementationChoiceStack(object):
 
     def __init__(self):
         self._stack = []
-        self._limit = 100
         self.frozen = False
 
     def __repr__(self):
@@ -40,11 +40,11 @@ class ImplementationChoiceStack(object):
         if self.frozen:
             raise RuntimeError(
                 'further nesting of implementation choice has been disabled')
-        if len(self._stack) > self._limit:
+        if len(self._stack) > LIMIT:
             raise OverflowError(
                 'stack limit exceeded ({unique} unique, {limit} limit)'.format(
                     unique=len(set(self._stack)),
-                    limit=self._limit, ))
+                    limit=LIMIT, ))
 
         self._stack.append(new)
         try:
