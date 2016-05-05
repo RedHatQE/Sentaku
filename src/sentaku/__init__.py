@@ -32,10 +32,16 @@ class ApplicationDescription(object):
         return self
 
     @contextlib.contextmanager
-    def use(self, *context_types, **kw):
+    def use(self, *implementation_types, **kw):
+        """contextmanager for controlling
+        the currently active/usable implementations and their fallback order
+
+        :param frozen: if True prevent further nesting
+        """
         if kw:
-            assert len(kw) == 1 and 'frozen' in kw
-        with self._chains.pushed(context_types, frozen=kw.get('frozen', False)):
+            assert len(kw) == 1
+            assert 'frozen' in kw
+        with self._chains.pushed(implementation_types, frozen=kw.get('frozen', False)):
             yield self.impl
 
 
@@ -109,8 +115,8 @@ class ImplementationRegistry(object):
         self.implementations = {}
 
     def __repr__(self):
-        return '<ImplementationCooser %r>' % (
-            sorted(self.implementations.keys()), )
+        return '<ImplementationCooser {implementations}>'.format(
+            implementations=sorted(self.implementations.keys()))
 
     def implemented_for(self, key):
         """decorator to register a new implementation"""
@@ -123,7 +129,7 @@ class ImplementationRegistry(object):
         register_selector_decorator.key = key
         return register_selector_decorator
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, *_ignored):
         if instance is None:
             return self
         return _ImplementationBindingMethod(instance=instance, selector=self)
