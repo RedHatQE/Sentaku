@@ -4,22 +4,17 @@ from .ux import TodoUX
 
 class ViaAPI(sentaku.ApplicationImplementation):
     """access to the core api of the application"""
-    def __init__(self, api):
-        self.api = api
 
 
 class ViaUX(sentaku.ApplicationImplementation):
     """access to the application via the basic api of the pseudo-ux"""
-
-    def __init__(self, ux):
-        self.ux = ux
 
     @classmethod
     def from_api(cls, api):
         """creates a ux for the given api before
 
         returning the implementation holder"""
-        return cls(ux=TodoUX(api))
+        return cls(TodoUX(api))
 
 
 class TodoItem(sentaku.Element):
@@ -36,14 +31,14 @@ class TodoItem(sentaku.Element):
 
     @set_completion_state.implemented_for(ViaAPI)
     def set_completion_state(self, value):
-        api = self.impl.api
+        api = self.impl
         col = api.get_by(self.parent.name)
         elem = col.get_by(self.name)
         elem.completed = value
 
     @set_completion_state.implemented_for(ViaUX)
     def set_completion_state(self, value):
-        ux = self.impl.ux
+        ux = self.impl
         col = ux.get_by(self.parent.name)
         elem = col.get_by(self.name)
         elem.completed = value
@@ -63,25 +58,24 @@ class TodoCollection(sentaku.Collection):
 
     @create_item.implemented_for(ViaAPI)
     def create_item(self, name):
-        api = self.impl.api
-        api_list = api.get_by(self.name)
+        collection = self.impl.get_by(self.name)
 
-        elem = api_list.create_item(name=name)
+        elem = collection.create_item(name=name)
         assert elem
         return TodoItem(self, name=name)
 
     @create_item.implemented_for(ViaUX)
     def create_item(self, name):
-        ux = self.impl.ux
-        collection = ux.get_by(self.name)
-        collection.create_item(name)
+        collection = self.impl.get_by(self.name)
+        elem = collection.create_item(name)
+        assert elem
         return TodoItem(self, name=name)
 
     get_by = sentaku.ImplementationRegistry()
 
     @get_by.implemented_for(ViaAPI)
     def get_by(self, name):
-        api = self.impl.api
+        api = self.impl
         api_list = api.get_by(self.name)
         elem = api_list.get_by(name)
         if elem is not None:
@@ -89,7 +83,7 @@ class TodoCollection(sentaku.Collection):
 
     @get_by.implemented_for(ViaUX)
     def get_by(self, name):
-        ux = self.impl.ux
+        ux = self.impl
         ux_list = ux.get_by(self.name)
         elem = ux_list.get_by(name)
         if elem is not None:
@@ -99,13 +93,13 @@ class TodoCollection(sentaku.Collection):
 
     @clear_completed.implemented_for(ViaAPI)
     def clear_completed(self):
-        api = self.impl.api
+        api = self.impl
         api_list = api.get_by(self.name)
         api_list.clear_completed()
 
     @clear_completed.implemented_for(ViaUX)
     def clear_completed(self):
-        ux = self.impl.ux
+        ux = self.impl
         ux_list = ux.get_by(self.name)
         ux_list.clear_completed()
 
@@ -127,13 +121,13 @@ class TodoApi(sentaku.ApplicationDescription):
 
     @create_collection.implemented_for(ViaAPI)
     def create_collection(self, name):
-        api = self.impl.api
+        api = self.impl
         elem = api.create_item(name=name)
         assert elem
         return TodoCollection(self, name=name)
 
     @create_collection.implemented_for(ViaUX)
     def create_collection(self, name):
-        ux = self.impl.ux
+        ux = self.impl
         ux.create_item(name)
         return TodoCollection(self, name=name)

@@ -17,7 +17,8 @@ class ApplicationDescription(object):
     @property
     def impl(self):
         """the current active implementation"""
-        return self.implementation_chooser.choose(self._implementations)[1]
+        return self.implementation_chooser.choose(
+            self._implementations)[1].implementation
 
     @classmethod
     def from_implementations(cls, implementations):
@@ -69,8 +70,11 @@ class ApplicationImplementation(object):
     for one particular implementation
 
     they are also used to name and refer to implementations for selection
+
+    :arg implementation: object holding an actual implementation
     """
-    pass
+    def __init__(self, implementation):
+        self.implementation = implementation
 
 
 class Collection(Element):
