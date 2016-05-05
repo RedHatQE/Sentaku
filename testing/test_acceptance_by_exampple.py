@@ -10,6 +10,7 @@ def api():
 @pytest.mark.parametrize('impl', [spec.ViaAPI, spec.ViaUX])
 def test_simple(api, impl):
     with api.use(impl):
+        assert api.implementation_chooser.current == (impl, )
         collection = api.create_collection(name='test')
         item = collection.create_item(name='buy ham')
         # assert collection.all()[0] == item
