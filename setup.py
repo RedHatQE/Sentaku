@@ -16,10 +16,6 @@ setup(name="sentaku",
       url="https://github.com/RonnyPfannschmidt/Sentaku",
       packages=["sentaku"],
       package_dir={'': 'src'},
-      install_requires=[
-          'attrs',
-          'cached_property',
-      ],
       setup_requires=[
           'setuptools_scm',
       ],

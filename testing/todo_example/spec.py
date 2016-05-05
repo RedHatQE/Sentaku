@@ -1,18 +1,18 @@
-import attr
 import sentaku
 from .ux import TodoUX
 
 
-@attr.s
 class ViaAPI(sentaku.ApplicationImplementation):
     """access to the core api of the application"""
-    api = attr.ib()
+    def __init__(self, api):
+        self.api = api
 
 
-@attr.s
 class ViaUX(sentaku.ApplicationImplementation):
     """access to the application via the basic api of the pseudo-ux"""
-    ux = attr.ib()
+
+    def __init__(self, ux):
+        self.ux = ux
 
     @classmethod
     def from_api(cls, api):

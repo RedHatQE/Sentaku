@@ -1,12 +1,11 @@
-import attr
 
 
-@attr.s
 class TodoUX(object):
     """
     example root UX fore todo lists
     """
-    app = attr.ib()
+    def __init__(self, app):
+        self.app = app
 
     def get_by(self, name):
         """get a todo list ux by name
@@ -26,7 +25,6 @@ class TodoUX(object):
         return TodoListUX(ux=self, controlled_list=item)
 
 
-@attr.s
 class TodoListUX(object):
     """
     example ux for single todo lists
@@ -40,8 +38,9 @@ class TodoListUX(object):
 
     """
 
-    ux = attr.ib()
-    controlled_list = attr.ib()
+    def __init__(self, ux, controlled_list):
+        self.ux = ux
+        self.controlled_list = controlled_list
 
     def get_by(self, name):
         """
@@ -66,7 +65,6 @@ class TodoListUX(object):
         self.controlled_list.clear_completed()
 
 
-@attr.s
 class TodoElementUX(object):
     """
     ux controller element for a todo list element
@@ -80,8 +78,9 @@ class TodoElementUX(object):
         the controlled TodoElement
 
     """
-    parent = attr.ib()
-    controlled_element = attr.ib()
+    def __init__(self, parent, controlled_element):
+        self.parent = parent
+        self.controlled_element = controlled_element
 
     @property
     def completed(self):
