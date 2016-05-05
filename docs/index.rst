@@ -2,8 +2,10 @@
 Welcome to Sentaku's documentation!
 =====================================
 
-Multi implementation domain modeling for driving functional and systtem tests.
+Sentaku is a experiment for acceptance testing.
 
+Sentaku provides a easy way to describe applications and use-cases
+while being able to choose implementations and fall back between them.
 
 Contents:
 
