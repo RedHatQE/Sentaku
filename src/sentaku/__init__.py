@@ -1,5 +1,5 @@
 import contextlib
-from .implementations_stack import ChainCtx
+from .implementations_stack import ImplementationChoiceStack
 
 
 class ApplicationDescription(object):
@@ -12,12 +12,12 @@ class ApplicationDescription(object):
 
     def __init__(self, implementations):
         self._implementations = implementations
-        self._chains = ChainCtx()
+        self.implementation_chooser = ImplementationChoiceStack()
 
     @property
     def impl(self):
         """the current active implementation"""
-        return self._implementations[self._chains.current[0]]
+        return self.implementation_chooser.choose(self._implementations)[1]
 
     @classmethod
     def from_implementations(cls, implementations):
@@ -41,7 +41,8 @@ class ApplicationDescription(object):
         if kw:
             assert len(kw) == 1
             assert 'frozen' in kw
-        with self._chains.pushed(implementation_types, frozen=kw.get('frozen', False)):
+        with self.implementation_chooser.pushed(
+                implementation_types, frozen=kw.get('frozen', False)):
             yield self.impl
 
 
@@ -93,14 +94,14 @@ class _ImplementationBindingMethod(object):
         self.selector = selector
 
     def __call__(self, *k, **kw):
-        inst = self.instance
-        chose_from = inst.root._chains.current
-        for choice in chose_from:
-            implementation = self.selector.implementations.get(choice)
-            if implementation is not None:
-                with inst.root.use(choice, frozen=True):
-                    return implementation.__get__(inst, type(inst))(*k, **kw)
-        raise LookupError(chose_from, self.selector.implementations.keys())
+        root = self.instance.root
+        choice, implementation = root.implementation_chooser.choose(
+            self.selector.implementations)
+
+        bound_method = implementation.__get__(
+            self.instance, type(self.instance))
+        with root.use(choice, frozen=True):
+            return bound_method(*k, **kw)
 
 
 class ImplementationRegistry(object):

@@ -1,16 +1,23 @@
 import pytest
-from sentaku.implementations_stack import stack_top
+from sentaku.implementations_stack import ImplementationChoiceStack
 
 
-def test_empty():
+@pytest.fixture
+def chooser():
+    return ImplementationChoiceStack()
+
+
+def test_empty(chooser):
     with pytest.raises(LookupError):
-        stack_top([])
-    assert stack_top([], None) is None
+        chooser.current
 
 
-@pytest.mark.parametrize('stack,top', [
-    ([1, 2], 2),
-    ([1], 1),
-])
-def test_nonempty(stack, top):
-    assert stack_top(stack) == top
+def test_nonempty(chooser):
+    with chooser.pushed(1):
+        assert chooser.current == 1
+
+def test_freezing(chooser):
+    with chooser.pushed(1, frozen=True):
+        with pytest.raises(RuntimeError):
+            with chooser.pushed(1):
+                pass

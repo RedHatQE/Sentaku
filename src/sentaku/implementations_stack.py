@@ -6,48 +6,50 @@ based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
 from contextlib import contextmanager
-import attr
 
 
-class NotGiven(object):
-    pass
+class ImplementationChoiceStack(object):
 
+    def __init__(self):
+        self._stack = []
+        self._limit = 100
+        self.frozen = False
 
-def stack_top(elements, default=NotGiven):
-    if elements:
-        return elements[-1]
-    elif default is not NotGiven:
-        return default
-    else:
-        raise LookupError('empty stack has no current top')
-
-
-@attr.s
-class ChainCtx(object):
-    stack = attr.ib(default=attr.Factory(list))
-    default = attr.ib(default=NotGiven)
-    limit = attr.ib(default=100)
-    frozen = attr.ib(default=False)
+    def __repr__(self):
+        return '<ICS {self._stack} frozen={self.frozen}>'.format(self=self)
 
     @property
     def current(self):
-        return stack_top(self.stack, self.default)
+        if self._stack:
+            return self._stack[-1]
+        raise LookupError('empty stack has no current top')
+
+    def choose(self, choose_from):
+        """given a mapping of implementations
+        choose one based on the current settings
+        returns a key value pair
+        """
+
+        for choice in self.current:
+            if choice in choose_from:
+                return choice, choose_from[choice]
+        raise LookupError(self.curent, choose_from.keys())
 
     @contextmanager
     def pushed(self, new, frozen=False):
         if self.frozen:
             raise RuntimeError(
                 'further nesting of implementation choice has been disabled')
-        if len(self.stack) > self.limit:
+        if len(self._stack) > self._limit:
             raise OverflowError(
                 'stack limit exceeded ({unique} unique, {limit} limit)'.format(
-                    unique=len(set(self.stack)),
-                    limit=self.limit, ))
+                    unique=len(set(self._stack)),
+                    limit=self._limit, ))
 
-        self.stack.append(new)
+        self._stack.append(new)
         try:
             self.frozen, old_frozen = frozen, self.frozen
             yield
         finally:
             self.frozen = old_frozen
-            self.stack.pop()
+            self._stack.pop()
