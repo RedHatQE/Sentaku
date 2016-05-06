@@ -7,7 +7,7 @@ def api():
     return spec.TodoApi.from_api(todo_api.TodoApp())
 
 
-@pytest.mark.parametrize('impl', [spec.ViaAPI, spec.ViaUX])
+@pytest.mark.parametrize('impl', [spec.ViaAPI, spec.ViaUX, spec.ViaRPC])
 def test_simple(api, impl):
     with api.use(impl):
         assert api.implementation_chooser.current == (impl, )

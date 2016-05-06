@@ -123,15 +123,19 @@ class ImplementationRegistry(object):
         return '<ImplementationCooser {implementations}>'.format(
             implementations=sorted(self.implementations.keys()))
 
-    def implemented_for(self, key):
+    def add_implementation(self, keys, func):
+        for key in keys:
+            assert key not in self.implementations
+            self.implementations[key] = func
+
+    def implemented_for(self, *keys):
         """decorator to register a new implementation"""
         def register_selector_decorator(func):
             assert not isinstance(func, type(self))
-            assert key not in self.implementations
-            self.implementations[key] = func
+            self.add_implementation(keys, func)
             return self
 
-        register_selector_decorator.key = key
+        register_selector_decorator.keys = keys
         return register_selector_decorator
 
     def __get__(self, instance, *_ignored):
