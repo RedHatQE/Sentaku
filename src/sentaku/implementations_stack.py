@@ -33,7 +33,7 @@ class ImplementationChoiceStack(object):
         for choice in self.current:
             if choice in choose_from:
                 return choice, choose_from[choice]
-        raise LookupError(self.curent, choose_from.keys())
+        raise LookupError(self.current, choose_from.keys())
 
     @contextmanager
     def pushed(self, new, frozen=False):

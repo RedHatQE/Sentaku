@@ -22,3 +22,15 @@ def test_freezing(chooser):
         with pytest.raises(RuntimeError):
             with chooser.pushed(1):
                 pass
+
+
+def test_choose(chooser):
+    with chooser.pushed([1, 2]):
+        res = chooser.choose({1: 'a'})
+    assert res == (1, 'a')
+
+
+def test_choose_missing(chooser):
+    with chooser.pushed([1, 2]):
+        with pytest.raises(LookupError):
+            chooser.choose({3: 3})
