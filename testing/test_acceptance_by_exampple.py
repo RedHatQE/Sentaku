@@ -1,4 +1,5 @@
 import pytest
+
 from todo_example import spec, api as todo_api
 
 

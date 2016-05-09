@@ -3,7 +3,7 @@ import sys
 import os
 import pkg_resources
 
-sys.path.insert(0, os.path.abspath('../testing'))
+sys.path.insert(0, os.path.abspath('../examples'))
 
 __distribution = pkg_resources.get_distribution('Sentaku')
 
