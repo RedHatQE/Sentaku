@@ -19,12 +19,13 @@ parser.add_argument('query')
 parser.add_argument('--fast', action='store_true')
 
 
-class FastSearch(sentaku.ApplicationImplementation):
-    """Used to implement fast search"""
+FastSearch = sentaku.ImplementationName(
+    'FastSearch',
+    """Used to implement fast search""")
 
-
-class Browser(sentaku.ApplicationImplementation):
-    """used to implement all browser actions and browser based slow search"""
+Browser = sentaku.ImplementationName(
+    'FastSearch',
+    """used to implement all browser actions and browser based slow search""")
 
 
 class Search(sentaku.ApplicationDescription):
@@ -47,7 +48,7 @@ class Search(sentaku.ApplicationDescription):
     def search(self, text):
         """do a sloppy quick "search" via the json index"""
 
-        resp = requests.get(
+        resp = self.impl.get(
             'https://pypi.python.org/pypi/{text}/json'.format(text=text))
         return resp.json()['info']['package_url']
 
@@ -69,14 +70,15 @@ def cli_main():
     """cli entrypoitns, sets up everything needed"""
     args = parser.parse_args()
     # open up a browser
-    b = Remote(
+    firefox_remote = Remote(
         'http://127.0.0.1:4444/wd/hub',
         DesiredCapabilities.FIREFOX)
-    with contextlib.closing(b):
+    with contextlib.closing(firefox_remote):
 
-        # set up the description and the implementations
-        implementations = [FastSearch(0), Browser(b)]
-        search = Search.from_implementations(implementations)
+        search = Search({
+            FastSearch: requests,
+            Browser: firefox_remote,
+        })
 
         if args.fast:
             with search.use(FastSearch, Browser):

@@ -1,5 +1,14 @@
 import contextlib
 from .implementations_stack import ImplementationChoiceStack
+from .implementation_handling import (
+    ImplementationName,
+    AttributeBasedImplementations,
+)
+
+__all__ = [
+    'ImplementationName',
+    'AttributeBasedImplementations',
+]
 
 
 class ApplicationDescription(object):
@@ -18,13 +27,16 @@ class ApplicationDescription(object):
     def impl(self):
         """the current active implementation"""
         return self.implementation_chooser.choose(
-            self._implementations).value.implementation
+            self._implementations).value
 
     @classmethod
     def from_implementations(cls, implementations):
         """utility to create the application description
         by passing instances of the different implementations"""
-        implementations = {type(s): s for s in implementations}
+        implementations = {
+            type(implementation): implementation.implementation
+            for implementation in implementations
+        }
         return cls(implementations=implementations)
 
     @property
