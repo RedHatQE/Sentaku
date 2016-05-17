@@ -18,7 +18,7 @@ class ApplicationDescription(object):
     def impl(self):
         """the current active implementation"""
         return self.implementation_chooser.choose(
-            self._implementations)[1].implementation
+            self._implementations).value.implementation
 
     @classmethod
     def from_implementations(cls, implementations):

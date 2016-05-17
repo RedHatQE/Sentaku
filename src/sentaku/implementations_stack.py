@@ -6,7 +6,10 @@ based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
 from contextlib import contextmanager
+from collections import namedtuple
 LIMIT = 20
+
+ImplementationChoice = namedtuple('ImplementationChoice', 'key, value')
 
 
 class ImplementationChoiceStack(object):
@@ -32,7 +35,7 @@ class ImplementationChoiceStack(object):
 
         for choice in self.current:
             if choice in choose_from:
-                return choice, choose_from[choice]
+                return ImplementationChoice(choice, choose_from[choice])
         raise LookupError(self.current, choose_from.keys())
 
     @contextmanager
