@@ -29,3 +29,9 @@ class AttributeBasedImplementations(Mapping):
                 name=attribute_name,
             ))
         return result
+
+    def __iter__(self):
+        return iter(self.attribute_mapping)
+
+    def __len__(self):
+        return len(self.attribute_mapping)
