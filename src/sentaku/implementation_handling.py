@@ -24,7 +24,7 @@ class AttributeBasedImplementations(Mapping):
         attribute_name = self.attribute_mapping[key]
         result = getattr(self.holder, attribute_name, _NOT_GIVEN)
         if result is _NOT_GIVEN:
-            raise LookupError('{holder:r} has no attribute {name}'.format(
+            raise LookupError('{holder!r} has no attribute {name}'.format(
                 holder=self.holder,
                 name=attribute_name,
             ))
