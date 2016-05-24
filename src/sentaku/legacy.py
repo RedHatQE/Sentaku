@@ -1,3 +1,7 @@
+import warnings
+from .context import ImplementationContext
+from . import ContextualMethod
+
 
 class ApplicationImplementation(object):
     """Base class for implementations
@@ -11,3 +15,18 @@ class ApplicationImplementation(object):
     """
     def __init__(self, implementation):
         self.implementation = implementation
+
+
+class ApplicationDescription(ImplementationContext):
+    def __init__(self, *k, **kw):
+        warnings.warn(
+            "ApplicationDescription is deprecated, use ImplementationContext",
+            category=DeprecationWarning, stacklevel=2)
+        super(ApplicationDescription, self).__init__(*k, **kw)
+
+
+def ImplementationRegistry():
+    warnings.warn(
+        'Renamed to ContextualMethod',
+        category=DeprecationWarning, stacklevel=2)
+    return ContextualMethod()

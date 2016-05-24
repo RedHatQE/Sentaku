@@ -15,9 +15,6 @@ setup(name="sentaku",
       setup_requires=[
           'setuptools_scm',
       ],
-      install_requires=[
-          'deprecate',
-      ],
       classifiers=[
           "Topic :: Utilities",
           "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
