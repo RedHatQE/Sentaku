@@ -5,7 +5,7 @@ class ImplementationContext(object):
 
     def __init__(self, implementations, default_choices=None):
         self._implementations = implementations
-        from .implementations_stack import ChooserStack
+        from .chooser import ChooserStack
         self.implementation_chooser = ChooserStack(default_choices)
 
     @property
@@ -15,14 +15,15 @@ class ImplementationContext(object):
             self._implementations).value
 
     @classmethod
-    def from_implementations(cls, implementations):
+    def from_implementations(cls, implementations, default_choices=None):
         """utility to create the application description
         by passing instances of the different implementations"""
         implementations = {
             type(implementation): implementation.implementation
             for implementation in implementations
         }
-        return cls(implementations=implementations)
+        return cls(implementations=implementations,
+                   default_choices=default_choices)
 
     @property
     def root(self):

@@ -1,5 +1,5 @@
 import pytest
-from sentaku.implementations_stack import ChooserStack
+from sentaku.chooser import ChooserStack
 
 
 @pytest.fixture
