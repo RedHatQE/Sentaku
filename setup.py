@@ -1,8 +1,4 @@
-#!/usr/bin/env python2
-# -*- encoding: utf-8 -*-
-#   Author(s): Milan Falesnik   <milan@falesnik.net>
-#                               <mfalesni@redhat.com>
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#!/usr/bin/env python
 
 from setuptools import setup
 
@@ -18,6 +14,9 @@ setup(name="sentaku",
       package_dir={'': 'src'},
       setup_requires=[
           'setuptools_scm',
+      ],
+      install_requires=[
+          'deprecate',
       ],
       classifiers=[
           "Topic :: Utilities",
