@@ -14,6 +14,7 @@ Contents:
    :maxdepth: 2
 
    about
+   the_parts
    examples
    api
 

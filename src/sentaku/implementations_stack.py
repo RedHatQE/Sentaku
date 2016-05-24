@@ -12,20 +12,17 @@ LIMIT = 20
 ImplementationChoice = namedtuple('ImplementationChoice', 'key, value')
 
 
-class ImplementationChoiceStack(object):
+class Chooser(namedtuple('Chooser', 'elements, previous, frozen')):
 
-    def __init__(self):
-        self._stack = []
-        self.frozen = False
+    @classmethod
+    def make(cls, current, elements, frozen):
+        if current is not None and current.frozen:
+            raise RuntimeError(
+                'further nesting of implementation choice has been disabled')
+        if frozen:
+            assert len(elements) == 1
 
-    def __repr__(self):
-        return '<ICS {self._stack} frozen={self.frozen}>'.format(self=self)
-
-    @property
-    def current(self):
-        if self._stack:
-            return self._stack[-1]
-        raise LookupError('empty stack has no current top')
+        return cls(elements, current, frozen)
 
     def choose(self, choose_from):
         """given a mapping of implementations
@@ -33,26 +30,54 @@ class ImplementationChoiceStack(object):
         returns a key value pair
         """
 
-        for choice in self.current:
+        for choice in self.elements:
             if choice in choose_from:
                 return ImplementationChoice(choice, choose_from[choice])
-        raise LookupError(self.current, choose_from.keys())
+        raise LookupError(self.elements, choose_from.keys())
+
+
+class NullChooser(object):
+    frozen = False
+
+    def choose(self, choose_from):
+        raise LookupError('No choice possible without valid context')
+
+
+def chain(element):
+    elements = []
+    while not isinstance(element, NullChooser):
+        elements.append(element)
+        element = element.previous
+    elements.reverse()
+    return elements
+
+
+class ChooserStack(object):
+
+    def __init__(self, default_elements=None):
+        if default_elements is not None:
+            self.current = Chooser(
+                elements=default_elements,
+                previous=NullChooser(), frozen=False)
+        else:
+            self.current = NullChooser()
+
+    def __repr__(self):
+        return '<ICS {chain}>'.format(chain=chain(self.current))
+
+    def choose(self, choose_from):
+        """given a mapping of implementations
+        choose one based on the current settings
+        returns a key value pair
+        """
+        return self.current.choose(choose_from)
 
     @contextmanager
     def pushed(self, new, frozen=False):
-        if self.frozen:
-            raise RuntimeError(
-                'further nesting of implementation choice has been disabled')
-        if len(self._stack) > LIMIT:
-            raise OverflowError(
-                'stack limit exceeded ({unique} unique, {limit} limit)'.format(
-                    unique=len(set(self._stack)),
-                    limit=LIMIT, ))
-
-        self._stack.append(new)
+        self.current = Chooser.make(self.current, new, frozen)
         try:
-            self.frozen, old_frozen = frozen, self.frozen
+            if len(chain(self.current)) > LIMIT:
+                raise OverflowError("stack depth exceeded")
             yield
         finally:
-            self.frozen = old_frozen
-            self._stack.pop()
+            self.current = self.current.previous

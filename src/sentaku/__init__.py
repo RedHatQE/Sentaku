@@ -1,5 +1,5 @@
 import contextlib
-from .implementations_stack import ImplementationChoiceStack
+import warnings
 from .implementation_handling import (
     ImplementationName,
     AttributeBasedImplementations,
@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class ApplicationDescription(object):
+class ImplementationContext(object):
     """Base class for application descriptions
 
     this is the starting point for any description of the concepts
@@ -19,9 +19,10 @@ class ApplicationDescription(object):
     of those concepts
     """
 
-    def __init__(self, implementations):
+    def __init__(self, implementations, default_choices=None):
         self._implementations = implementations
-        self.implementation_chooser = ImplementationChoiceStack()
+        from .implementations_stack import ChooserStack
+        self.implementation_chooser = ChooserStack(default_choices)
 
     @property
     def impl(self):
@@ -57,6 +58,14 @@ class ApplicationDescription(object):
         with self.implementation_chooser.pushed(
                 implementation_types, frozen=kw.get('frozen', False)):
             yield self.impl
+
+
+class ApplicationDescription(ImplementationContext):
+    def __init__(self, *k, **kw):
+        warnings.warn(
+            "ApplicationDescription is deprecated, use ImplementationContext",
+            category=DeprecationWarning, stacklevel=2)
+        super(ApplicationDescription, self).__init__(*k, **kw)
 
 
 class Element(object):
