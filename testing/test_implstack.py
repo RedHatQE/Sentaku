@@ -24,6 +24,16 @@ def test_freezing(chooser):
                 pass
 
 
+def tet_overflow(chooser):
+
+    def nest(n=21):
+        if n:
+            with chooser.pushed([1]):
+                nest(n=n-1)
+    with pytest.raises(OverflowError):
+        nest()
+
+
 def test_choose(chooser):
     with chooser.pushed([1, 2]):
         res = chooser.choose({1: 'a'})
