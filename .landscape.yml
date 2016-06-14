@@ -1,0 +1,7 @@
+doc-warnings: yes
+strictness: veryhigh
+max-line-length: 120
+
+pep8:
+  disable:
+    - E0102
