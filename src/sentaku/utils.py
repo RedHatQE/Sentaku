@@ -7,6 +7,9 @@ _NOT_GIVEN = object()
 
 
 class ImplementationName(object):
+    """
+    utility class to declare names for implementations
+    """
     def __init__(self, name, doc=None):
         self.name = name
         self.documentation = doc
@@ -16,6 +19,7 @@ class ImplementationName(object):
 
 
 class AttributeBasedImplementations(Mapping):
+
     def __init__(self, holder, attribute_mapping):
         self.holder = holder
         self.attribute_mapping = attribute_mapping

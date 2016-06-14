@@ -28,9 +28,9 @@ Browser = sentaku.ImplementationName(
     """used to implement all browser actions and browser based slow search""")
 
 
-class Search(sentaku.ApplicationDescription):
-    """sentaku description for really simple pypi searching"""
-    search = sentaku.ImplementationRegistry()
+class Search(sentaku.Element):
+    """sentaku element for really simple pypi searching"""
+    search = sentaku.ContextualMethod()
 
     @search.implemented_for(Browser)
     def search(self, text):
@@ -52,7 +52,7 @@ class Search(sentaku.ApplicationDescription):
             'https://pypi.python.org/pypi/{text}/json'.format(text=text))
         return resp.json()['info']['package_url']
 
-    open_page = sentaku.ImplementationRegistry()
+    open_page = sentaku.ContextualMethod()
 
     @open_page.implemented_for(Browser)
     def open_page(self, url):

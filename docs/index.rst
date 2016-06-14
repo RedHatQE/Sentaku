@@ -14,9 +14,10 @@ Contents:
    :maxdepth: 2
 
    about
+   getting_started
    the_parts
+   extra_api
    examples
-   api
 
 
 

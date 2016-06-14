@@ -2,6 +2,8 @@ Examples
 =============
 
 
+.. _mini-example:
+
 Mini example
 **************
 

@@ -2,7 +2,20 @@ import contextlib
 
 
 class ImplementationContext(object):
+    """ maintains a mapping
+    of :ref:`implementation-identification` to implementations,
+    as well as the list of currently availiable Implementations
+    in the order of precedence.
 
+    :param dict implementations:
+        the implementations availiable in the context
+
+        a mapping of :ref:`implementation-identification` to implementation
+    :param default_choices:
+        the implementations that should be used by default
+        in order of percedence
+    :type default_choices: list or None
+    """
     def __init__(self, implementations, default_choices=None):
         self._implementations = implementations
         from .chooser import ChooserStack
@@ -10,7 +23,7 @@ class ImplementationContext(object):
 
     @property
     def impl(self):
-        """the current active implementation"""
+        """the currently active implementation"""
         return self.implementation_chooser.choose(
             self._implementations).value
 
@@ -26,16 +39,21 @@ class ImplementationContext(object):
                    default_choices=default_choices)
 
     @property
-    def root(self):
+    def context(self):
         """alias for consistence with elements"""
         return self
+
+    root = context
 
     @contextlib.contextmanager
     def use(self, *implementation_types, **kw):
         """contextmanager for controlling
-        the currently active/usable implementations and their fallback order
+        the currently active/usable implementations and
+        their order of percedence
 
-        :param frozen: if True prevent further nesting
+        :param `implementation-identification` implementation_types:
+            the implementations availiable within the context
+        :keyword bool frozen: if True prevent further nesting
         """
         if kw:
             assert len(kw) == 1
@@ -59,22 +77,33 @@ class _ImplementationBindingMethod(object):
         self.selector = selector
 
     def __call__(self, *k, **kw):
-        root = self.instance.root
-        choice, implementation = root.implementation_chooser.choose(
+        ctx = self.instance.context
+        choice, implementation = ctx.implementation_chooser.choose(
             self.selector.implementations)
 
         bound_method = implementation.__get__(
             self.instance, type(self.instance))
-        with root.use(choice, frozen=True):
+        with ctx.use(choice, frozen=True):
             return bound_method(*k, **kw)
 
 
 class ContextualMethod(object):
-    """this registry for implementations
-    also acts as descriptor picking a currently valid implementation
+    """
+    descriptor for implementing context sensitive methods
+    and registration of their implementations
 
-    .. todo:: find a better name
 
+    .. code:: python
+
+        class Example(Element):
+            action = ContextualMethod()
+            @action.implemented_for("db")
+            def action(self):
+                pass
+
+           @action.implemented_for("test")
+           def action(self):
+               pass
     """
 
     def __init__(self):
@@ -84,16 +113,18 @@ class ContextualMethod(object):
         return '<ContextualMethod {implementations}>'.format(
             implementations=sorted(self.implementations.keys()))
 
-    def add_implementation(self, keys, func):
+    def _add_implementations(self, keys, func):
         for key in keys:
             assert key not in self.implementations
             self.implementations[key] = func
 
-    def implemented_for(self, *contexts):
-        """decorator to register a new implementation"""
+    def implemented_for(self, *implementations):
+        """
+        decorator that registers a new implementation and returns the descriptor
+        """
         def register_selector_decorator(func):
             assert not isinstance(func, type(self))
-            self.add_implementation(contexts, func)
+            self._add_implementations(implementations, func)
             return self
 
         return register_selector_decorator
