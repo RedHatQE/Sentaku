@@ -39,7 +39,7 @@ class Chooser(namedtuple('Chooser', 'elements, previous, frozen')):
 class NullChooser(object):
     frozen = False
 
-    def choose(self, choose_from):
+    def choose(self, *_, **__):
         raise LookupError('No choice possible without valid context')
 
 
