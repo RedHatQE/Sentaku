@@ -62,7 +62,7 @@ class Search(sentaku.Element):
 def main(search, query):
     """main function that does the search"""
     url = search.search(query)
-    print url
+    print(url)
     search.open_page(url)
 
 
