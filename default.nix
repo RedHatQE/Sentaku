@@ -12,6 +12,9 @@ stdenv.mkDerivation rec {
     bpython
     sqlite
     setuptools_scm
+    bootstrapped-pip
+    pip
+    wheel
     pytest
     flake8
     pygments
