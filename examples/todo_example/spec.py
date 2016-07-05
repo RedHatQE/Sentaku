@@ -1,6 +1,5 @@
 import sentaku
 from .ux import TodoUX
-from .pseudorpc import PseudoRpc
 
 
 class ViaAPI(sentaku.ApplicationImplementation):
@@ -25,7 +24,8 @@ class ViaRPC(sentaku.ApplicationImplementation):
     def from_backend(cls, backend):
         """creates a rpc for the given backend before
         """
-        return cls(PseudoRpc(backend))
+        from . import pseudorpc
+        return cls(pseudorpc.PseudoRpc(backend))
 
 
 class TodoItem(sentaku.Element):
@@ -45,13 +45,6 @@ class TodoItem(sentaku.Element):
         col = self.impl.get_by(self.parent.name)
         elem = col.get_by(self.name)
         elem.completed = value
-
-    @set_completion_state.implemented_for(ViaRPC)
-    def set_completion_state(self, value):
-        if value:
-            self.impl.complete_item(self.parent.name, self.name)
-        else:
-            raise NotImplementedError('rpc cant undo completion')
 
     @completed.setter
     def completed(self, value):
@@ -73,11 +66,6 @@ class TodoCollection(sentaku.Collection):
         assert elem
         return TodoItem(self, name=name)
 
-    @create_item.implemented_for(ViaRPC)
-    def create_item(self, name):
-        self.impl.make_item(self.name, name)
-        return TodoItem(self, name=name)
-
     get_by = sentaku.ImplementationRegistry()
 
     @get_by.implemented_for(ViaAPI, ViaUX)
@@ -87,21 +75,12 @@ class TodoCollection(sentaku.Collection):
         if elem is not None:
             return TodoItem(self, name=name)
 
-    @get_by.implemented_for(ViaRPC)
-    def get_by(self, name):
-        if self.impl.has_item(self.name, name):
-            return TodoItem(self, name=name)
-
     clear_completed = sentaku.ImplementationRegistry()
 
     @clear_completed.implemented_for(ViaAPI, ViaUX)
     def clear_completed(self):
         collection = self.impl.get_by(self.name)
         collection.clear_completed()
-
-    @clear_completed.implemented_for(ViaRPC)
-    def clear_completed(self):
-        self.impl.clear_completed(self.name)
 
 
 class TodoApi(sentaku.ApplicationDescription):
@@ -124,9 +103,4 @@ class TodoApi(sentaku.ApplicationDescription):
     @create_collection.implemented_for(ViaUX, ViaAPI)
     def create_collection(self, name):
         self.impl.create_item(name)
-        return TodoCollection(self, name=name)
-
-    @create_collection.implemented_for(ViaRPC)
-    def create_collection(self, name):
-        self.impl.make_collection(name)
         return TodoCollection(self, name=name)
