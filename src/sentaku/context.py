@@ -129,7 +129,36 @@ class ContextualMethod(object):
 
         return register_selector_decorator
 
+    def external_implementation_for(self, *implementations):
+        def marking_decroator(func):
+            assert _get_method_data(func) is None
+            func._sentaku_method_data = (implementations, self)
+            return func
+        return marking_decroator
+
     def __get__(self, instance, *_ignored):
         if instance is None:
             return self
         return _ImplementationBindingMethod(instance=instance, selector=self)
+
+
+def _get_method_data(func):
+    return getattr(func, '_sentaku_method_data', None)
+
+
+def _iter_metadata(module):
+    for val in vars(module).values():
+        data = _get_method_data(val)
+        if data:
+            try:
+                keys, method = data
+            except (ValueError, TypeError):
+                pass
+            else:
+                yield val, keys, method
+
+
+def register_external_implementations_in(*modules):
+    for module in modules:
+        for func, keys, method in _iter_metadata(module):
+            method._add_implementations(keys, func)
