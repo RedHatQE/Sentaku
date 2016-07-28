@@ -28,6 +28,18 @@ class ImplementationContext(object):
             self._implementations).value
 
     @classmethod
+    def from_instances(cls, instances):
+        """utility to create the context
+
+        by passing a ordered list of instances
+        and turning them into implementations and the default choices
+        """
+        return cls(
+            implementations={type(x): x for x in instances},
+            default_choices=[type(x) for x in instances],
+        )
+
+    @classmethod
     def from_implementations(cls, implementations, default_choices=None):
         """utility to create the application description
         by passing instances of the different implementations"""
