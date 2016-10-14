@@ -2,7 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.cache/
+.eggs/
+.ipynb_checkpoints/
+.tox/
 # C extensions
 *.so
 
