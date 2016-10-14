@@ -1,15 +1,15 @@
 """
 a hideous rpc interface used to demonstrate partial implementation
 """
+import attr
 from . import spec
 
 
-
+@attr.s
 class PseudoRpc(object):
     """a hideous implementation"""
 
-    def __init__(self, backend):
-        self._backend = backend
+    _backend = attr.ib(repr=False)
 
     def make_collection(self, collection):
         """creates a todo list"""

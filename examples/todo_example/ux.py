@@ -1,5 +1,4 @@
 
-
 class TodoUX(object):
     """
     example root UX fore todo lists
