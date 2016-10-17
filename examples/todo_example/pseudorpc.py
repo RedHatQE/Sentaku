@@ -32,7 +32,7 @@ class PseudoRpc(object):
         self._backend.get_by(collection).clear_completed()
 
 
-@spec.TodoItem.set_completion_state.external_implementation_for(spec.ViaRPC)
+@spec.TodoItem.completed.external_setter_implemented_for(spec.ViaRPC)
 def todo_item_set_item_completion(item, value):
     if value:
         item.impl.complete_item(item.parent.name, item.name)

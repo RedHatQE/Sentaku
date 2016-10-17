@@ -34,21 +34,13 @@ class TodoItem(sentaku.Element):
         super(TodoItem, self).__init__(parent=parent)
         self.name = name
 
-    @property
-    def completed(self):
-        raise NotImplementedError
+    completed = sentaku.ContextualProperty()
 
-    set_completion_state = sentaku.ImplementationRegistry()
-
-    @set_completion_state.implemented_for(ViaAPI, ViaUX)
-    def set_completion_state(self, value):
+    @completed.setter_implemented_for(ViaAPI, ViaUX)
+    def completed(self, value):
         col = self.impl.get_by(self.parent.name)
         elem = col.get_by(self.name)
         elem.completed = value
-
-    @completed.setter
-    def completed(self, value):
-        self.set_completion_state(value)
 
 
 class TodoCollection(sentaku.Collection):
@@ -57,7 +49,7 @@ class TodoCollection(sentaku.Collection):
         super(TodoCollection, self).__init__(parent=parent)
         self.name = name
 
-    create_item = sentaku.ImplementationRegistry()
+    create_item = sentaku.ContextualMethod()
 
     @create_item.implemented_for(ViaAPI, ViaUX)
     def create_item(self, name):
@@ -66,7 +58,7 @@ class TodoCollection(sentaku.Collection):
         assert elem
         return TodoItem(self, name=name)
 
-    get_by = sentaku.ImplementationRegistry()
+    get_by = sentaku.ContextualMethod()
 
     @get_by.implemented_for(ViaAPI, ViaUX)
     def get_by(self, name):
@@ -75,7 +67,7 @@ class TodoCollection(sentaku.Collection):
         if elem is not None:
             return TodoItem(self, name=name)
 
-    clear_completed = sentaku.ImplementationRegistry()
+    clear_completed = sentaku.ContextualMethod()
 
     @clear_completed.implemented_for(ViaAPI, ViaUX)
     def clear_completed(self):
@@ -98,7 +90,7 @@ class TodoApi(sentaku.ApplicationDescription):
 
         return cls.from_implementations([via_api, via_ux, via_rpc])
 
-    create_collection = sentaku.ImplementationRegistry()
+    create_collection = sentaku.ContextualMethod()
 
     @create_collection.implemented_for(ViaUX, ViaAPI)
     def create_collection(self, name):

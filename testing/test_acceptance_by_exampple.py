@@ -15,6 +15,16 @@ def test_simple(api, impl):
         collection = api.create_collection(name='test')
         item = collection.create_item(name='buy ham')
         # assert collection.all()[0] == item
+
+        try:
+            assert item.completed == False
+        except LookupError:
+            pass # rpc
         item.completed = True
+
+        try:
+            assert item.completed == True
+        except LookupError:
+            pass # rpc
         collection.clear_completed()
         assert collection.get_by(name='buy ham') is None
