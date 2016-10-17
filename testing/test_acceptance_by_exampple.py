@@ -17,14 +17,14 @@ def test_simple(api, impl):
         # assert collection.all()[0] == item
 
         try:
-            assert item.completed == False
+            assert not item.completed
         except LookupError:
-            pass # rpc
+            pass  # rpc
         item.completed = True
 
         try:
-            assert item.completed == True
+            assert item.completed
         except LookupError:
-            pass # rpc
+            pass  # rpc
         collection.clear_completed()
         assert collection.get_by(name='buy ham') is None
