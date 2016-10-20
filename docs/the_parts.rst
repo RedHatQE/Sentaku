@@ -54,3 +54,10 @@ Contextual Methods
 
 .. autoclass:: ContextualMethod()
   :members:
+
+
+Contextual Properties
+---------------------
+
+.. autoclass:: ContextualProperty()
+  :members:
