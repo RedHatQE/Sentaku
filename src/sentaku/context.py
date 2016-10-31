@@ -1,5 +1,6 @@
 import contextlib
 import attr
+import dectate
 
 from .chooser import ChooserStack
 
@@ -7,7 +8,7 @@ METHOD_DATA_KEY = 'sentaku_method_data'
 
 
 @attr.s
-class ImplementationContext(object):
+class ImplementationContext(dectate.App):
     """ maintains a mapping
     of :ref:`implementation-identification` to implementations,
     as well as the list of currently availiable Implementations
