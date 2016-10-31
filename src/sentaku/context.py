@@ -1,10 +1,25 @@
 import contextlib
 import attr
 import dectate
-
+from collections import defaultdict
 from .chooser import ChooserStack
 
 METHOD_DATA_KEY = 'sentaku_method_data'
+
+
+@attr.s
+class ImplementationRegistrationAction(dectate.Action):
+    config = {
+        'methods': lambda: defaultdict(dict)
+    }
+    method = attr.ib()
+    implementation = attr.ib()
+
+    def identifier(self, methods):
+        return self.method, self.implementation
+
+    def perform(self, obj, methods):
+        methods[self.method][self.implementation] = obj
 
 
 @attr.s
@@ -26,6 +41,8 @@ class ImplementationContext(dectate.App):
     implementations = attr.ib()
     implementation_chooser = attr.ib(default=attr.Factory(ChooserStack), convert=ChooserStack)
 
+    external_for = dectate.directive(ImplementationRegistrationAction)
+
     @classmethod
     def with_default_choices(cls, implementations, default_choices):
         return cls(
@@ -38,6 +55,10 @@ class ImplementationContext(dectate.App):
         """the currently active implementation"""
         return self.implementation_chooser.choose(
             self.implementations).value
+
+    def _get_implementation_for(self, key):
+        implementation_set = self.config.methods[key]
+        return self.implementation_chooser.choose(implementation_set)
 
     @classmethod
     def from_instances(cls, instances):
@@ -68,11 +89,11 @@ class ImplementationContext(dectate.App):
             the implementations availiable within the context
         :keyword bool frozen: if True prevent further nesting
         """
-        if kw:
-            assert len(kw) == 1
-            assert 'frozen' in kw
+        def _get_frozen(frozen=False):
+            return frozen
+
         with self.implementation_chooser.pushed(
-                implementation_types, frozen=kw.get('frozen', False)):
+                implementation_types, frozen=_get_frozen(**kw)):
             yield self.impl
 
 
@@ -91,36 +112,11 @@ class _ImplementationBindingMethod(object):
 
     def __call__(self, *k, **kw):
         ctx = self.instance.context
-        choice, implementation = ctx.implementation_chooser.choose(
-            self.selector.implementations)
-
+        choice, implementation = ctx._get_implementation_for(self.selector)
         bound_method = implementation.__get__(
             self.instance, type(self.instance))
         with ctx.use(choice, frozen=True):
             return bound_method(*k, **kw)
-
-
-class _KeyRegistry(dict):
-    def add_implementations(self, keys, val):
-        for key in keys:
-            assert key not in self
-            self[key] = val
-
-
-def function_registring_decorator(registry, keys, result):
-    def register_and_return(func):
-        assert not isinstance(func, type(result))
-        registry.add_implementations(keys, func)
-        return result
-    return register_and_return
-
-
-def function_marking_decorator(registry, keys):
-    def mark_function(func):
-        method_data = func.__dict__.setdefault(METHOD_DATA_KEY, [])
-        method_data.append((registry, keys))
-        return func
-    return mark_function
 
 
 class ContextualMethod(object):
@@ -142,21 +138,11 @@ class ContextualMethod(object):
                pass
     """
 
-    def __init__(self):
-        self.implementations = _KeyRegistry()
-
     def __repr__(self):
-        return '<ContextualMethod {implementations}>'.format(
-            implementations=sorted(self.implementations.keys()))
-
-    def implemented_for(self, *implementations):
-        """
-        decorator that registers a new implementation and returns the descriptor
-        """
-        return function_registring_decorator(self.implementations, implementations, self)
+        return '<ContextualMethod>'.format()
 
     def external_implementation_for(self, *implementations):
-        return function_marking_decorator(self.implementations, implementations)
+        return ImplementationContext.external_for(self, implementations, self)
 
     def __get__(self, instance, *_ignored):
         if instance is None:
@@ -167,32 +153,19 @@ class ContextualMethod(object):
 class ContextualProperty(object):
 
     def __init__(self):
-        self.setters = _KeyRegistry()
-        self.getters = _KeyRegistry()
+        self.setter = self, 'set'
+        self.getter = self, 'get'
 
-    def setter_implemented_for(self, *implementations):
-        """
-        decorator that registers a new implementation and returns the descriptor
-        """
-        return function_registring_decorator(self.setters, implementations, self)
+    def external_setter_implemented_for(self, implementation):
+        return ImplementationContext.external_for(self.setter, implementation)
 
-    def getter_implemented_for(self, *implementations):
-        """
-        decorator that registers a new implementation and returns the descriptor
-        """
-        return function_registring_decorator(self.getters, implementations, self)
-
-    def external_setter_implemented_for(self, *implementations):
-        return function_marking_decorator(self.setters, implementations)
-
-    def external_getter_implemented_for(self, *implementations):
-        return function_marking_decorator(self.getters, implementations)
+    def external_getter_implemented_for(self, implementation):
+        return ImplementationContext.external_for(self.getter, implementation)
 
     def __set__(self, instance, value):
 
         ctx = instance.context
-        choice, implementation = ctx.implementation_chooser.choose(
-            self.setters)
+        choice, implementation = ctx._get_implementation_for(self.setter)
 
         bound_method = implementation.__get__(instance, type(instance))
         with ctx.use(choice, frozen=True):
@@ -203,26 +176,8 @@ class ContextualProperty(object):
             return self
 
         ctx = instance.context
-        choice, implementation = ctx.implementation_chooser.choose(
-            self.getters)
+        choice, implementation = ctx._get_implementation_for(self.getter)
 
         bound_method = implementation.__get__(instance, type(instance))
         with ctx.use(choice, frozen=True):
             return bound_method()
-
-
-def _get_method_data(func):
-    return getattr(func, METHOD_DATA_KEY, [])
-
-
-def _iter_metadata(module):
-    for maybe_func in vars(module).values():
-
-        for registry, keys in _get_method_data(maybe_func):
-            yield maybe_func, keys, registry
-
-
-def register_external_implementations_in(*modules):
-    for module in modules:
-        for func, keys, registry in _iter_metadata(module):
-            registry.add_implementations(keys, func)
