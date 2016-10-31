@@ -1,14 +1,10 @@
 with import <nixpkgs> {};
 with pkgs;
-with python27Packages;
+with python35Packages;
 stdenv.mkDerivation rec {
   name = "sentaku-test";
   src = null;
   buildInputs = [
-    gitFull
-    less
-    ncurses
-    openssh
     bpython
     sqlite
     setuptools_scm
@@ -18,18 +14,18 @@ stdenv.mkDerivation rec {
     flake8
     pygments
     sphinx
-    requests
+    requests2
     selenium
     virtualenv
     watchdog
+    six
+    attrs
   ];
 
   shellHook=''
   export PS1="(${name}) \w \\$ \[$(tput sgr0)\]"
   export PYTHONPATH="$PYTHONPATH:./src"
-  test() {
-    py.test
-  }
+  
 
   build_docs() {
     sphinx-build -b html -d build/sphinx-doctrees docs build/htmldocs
@@ -53,7 +49,7 @@ stdenv.mkDerivation rec {
 
   test_clean() {
     clean
-    test
+    py.test
   }
 
   '';
