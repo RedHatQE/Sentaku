@@ -1,39 +1,16 @@
+import attr
 import sentaku
 from .ux import TodoUX
 
-
-class ViaAPI(sentaku.ApplicationImplementation):
-    """access to the core api of the application"""
-
-
-class ViaUX(sentaku.ApplicationImplementation):
-    """access to the application via the basic api of the pseudo-ux"""
-
-    @classmethod
-    def from_api(cls, api):
-        """creates a ux for the given api before
-
-        returning the implementation holder"""
-        return cls(TodoUX(api))
+ViaAPI = sentaku.ImplementationName('API')
+ViaUX = sentaku.ImplementationName('UX')
+ViaRPC = sentaku.ImplementationName('RPC')
 
 
-class ViaRPC(sentaku.ApplicationImplementation):
-    """access the application via the pseudo rpc"""
-
-    @classmethod
-    def from_backend(cls, backend):
-        """creates a rpc for the given backend before
-        """
-        from . import pseudorpc
-        return cls(pseudorpc.PseudoRpc(backend))
-
-
+@attr.s
 class TodoItem(sentaku.Element):
     """describing a todo list element"""
-    def __init__(self, parent, name):
-        super(TodoItem, self).__init__(parent=parent)
-        self.name = name
-
+    name = attr.ib()
     completed = sentaku.ContextualProperty()
 
     @completed.setter_implemented_for(ViaAPI, ViaUX)
@@ -43,12 +20,10 @@ class TodoItem(sentaku.Element):
         elem.completed = value
 
 
+@attr.s
 class TodoCollection(sentaku.Collection):
     """domain object describing a todo list"""
-    def __init__(self, parent, name):
-        super(TodoCollection, self).__init__(parent=parent)
-        self.name = name
-
+    name = attr.ib()
     create_item = sentaku.ContextualMethod()
 
     @create_item.implemented_for(ViaAPI, ViaUX)
@@ -75,7 +50,7 @@ class TodoCollection(sentaku.Collection):
         collection.clear_completed()
 
 
-class TodoApi(sentaku.ApplicationDescription):
+class TodoApi(sentaku.ImplementationContext):
     """example description for a simple todo application"""
 
     @classmethod
@@ -84,11 +59,11 @@ class TodoApi(sentaku.ApplicationDescription):
         create an application description for the todo app,
         that based on the api can use either tha api or the ux for interaction
         """
-        via_api = ViaAPI(api)
-        via_ux = ViaUX.from_api(api)
-        via_rpc = ViaRPC.from_backend(api)
+        ux = TodoUX(api)
+        from .pseudorpc import PseudoRpc
+        rpc = PseudoRpc(api)
 
-        return cls.from_implementations([via_api, via_ux, via_rpc])
+        return cls({ViaAPI: api, ViaUX: ux, ViaRPC: rpc})
 
     create_collection = sentaku.ContextualMethod()
 

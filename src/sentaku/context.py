@@ -1,7 +1,12 @@
 import contextlib
+import attr
+
+from .chooser import ChooserStack
+
 METHOD_DATA_KEY = 'sentaku_method_data'
 
 
+@attr.s
 class ImplementationContext(object):
     """ maintains a mapping
     of :ref:`implementation-identification` to implementations,
@@ -17,16 +22,21 @@ class ImplementationContext(object):
         in order of percedence
     :type default_choices: list or None
     """
-    def __init__(self, implementations, default_choices=None):
-        self._implementations = implementations
-        from .chooser import ChooserStack
-        self.implementation_chooser = ChooserStack(default_choices)
+    implementations = attr.ib()
+    implementation_chooser = attr.ib(default=attr.Factory(ChooserStack), convert=ChooserStack)
+
+    @classmethod
+    def with_default_choices(cls, implementations, default_choices):
+        return cls(
+            implementations=implementations,
+            implementation_chooser=default_choices,
+            )
 
     @property
     def impl(self):
         """the currently active implementation"""
         return self.implementation_chooser.choose(
-            self._implementations).value
+            self.implementations).value
 
     @classmethod
     def from_instances(cls, instances):
@@ -35,21 +45,10 @@ class ImplementationContext(object):
         by passing a ordered list of instances
         and turning them into implementations and the default choices
         """
-        return cls(
+        return cls.with_default_choices(
             implementations={type(x): x for x in instances},
             default_choices=[type(x) for x in instances],
         )
-
-    @classmethod
-    def from_implementations(cls, implementations, default_choices=None):
-        """utility to create the application description
-        by passing instances of the different implementations"""
-        implementations = {
-            type(implementation): implementation.implementation
-            for implementation in implementations
-        }
-        return cls(implementations=implementations,
-                   default_choices=default_choices)
 
     @property
     def context(self):

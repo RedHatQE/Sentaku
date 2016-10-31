@@ -11,7 +11,6 @@ from .context import (
     ImplementationContext,
     register_external_implementations_in,
 )
-from .legacy import ApplicationImplementation, ImplementationRegistry, ApplicationDescription
 
 __all__ = [
     'Element',
@@ -21,10 +20,6 @@ __all__ = [
     'ContextualProperty',
     'ImplementationContext',
     'register_external_implementations_in',
-
-    'ApplicationImplementation',
-    'ImplementationRegistry',
-    'ApplicationDescription',
 
     'ImplementationName',
     'AttributeBasedImplementations',
