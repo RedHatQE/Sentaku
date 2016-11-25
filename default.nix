@@ -3,7 +3,7 @@ with pkgs;
 with python27Packages;
 stdenv.mkDerivation rec {
   name = "sentaku-test";
-  src = null;
+  src = ./.;
   buildInputs = [
     gitFull
     less
