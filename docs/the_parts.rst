@@ -1,5 +1,5 @@
-Components of Sentaku
-======================
+API Reference for Sentaku
+=========================
 
 .. py:currentmodule:: sentaku
 
@@ -10,21 +10,8 @@ ImplementationContext
 ------------------------
 
 .. autoclass:: ImplementationContext
-  :members: impl, root
+  :members:
 
-  .. automethod:: use(*implementation_types, [frozen=False])
-
-
-.. _implementation-identification:
-
-Implementation Identifications
-------------------------------
-
-Implementation Identifications are developer-choosen *Names* for Implementations.
-By convention you should use :py:class:`sentaku.ImplementationName` instances.
-
-Implementation Identifications are used to refer to implementations in the :ref:`implementation-context` abd they
-are used to refer to implementations when  registring implementations of :ref:`contextual-method`
 
 
 .. _application-element:
@@ -43,9 +30,6 @@ forms, rest collections/data entries, or file contents.
 
 .. autoclass:: Element
   :members:
-
-  .. py::attr:: parent
-
 
 .. _contextual-method:
 

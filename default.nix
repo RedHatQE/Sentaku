@@ -18,7 +18,14 @@ in buildPythonPackage rec {
   name = "sentaku-test";
   src = ./.;
   buildInputs = [
+    gitFull
+    less
+    ncurses
+    openssh
+    bpython
+    sqlite
     setuptools_scm
+    tox
     pytest
     flake8
     sphinx
@@ -33,7 +40,7 @@ in buildPythonPackage rec {
   shellHook=''
   export PS1="(${name}) \w \\$ \[$(tput sgr0)\]"
   export PYTHONPATH="$PYTHONPATH:./src"
-  
+
 
   build_docs() {
     sphinx-build -b html -d build/sphinx-doctrees docs build/htmldocs

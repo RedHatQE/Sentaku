@@ -29,14 +29,15 @@ class ImplementationContext(dectate.App):
     as well as the list of currently availiable Implementations
     in the order of precedence.
 
-    :param dict implementations:
+    :type implementations: `collections.Mapping`
+    :param implementations:
         the implementations availiable in the context
 
         a mapping of :ref:`implementation-identification` to implementation
     :param default_choices:
         the implementations that should be used by default
         in order of percedence
-    :type default_choices: list or None
+    :type default_choices: optional list
     """
     implementations = attr.ib()
     implementation_chooser = attr.ib(default=attr.Factory(ChooserStack), convert=ChooserStack)
