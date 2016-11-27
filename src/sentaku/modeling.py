@@ -1,6 +1,7 @@
-import warnings
+import attr
 
 
+@attr.s
 class Element(object):
     """Base class for all application elements
 
@@ -9,22 +10,13 @@ class Element(object):
         or a surrounding element
     :type parent: :py:class:`Element` or :py:class:`ImplementationContext`
     """
-    def __init__(self, parent):
-        self.parent = parent
+
+    parent = attr.ib(repr=False)
 
     @property
     def context(self):
         """the context this element belongs to"""
         return self.parent.context
-
-    @property
-    def root(self):
-        warnings.warn(
-            "Element.root got renamed to .context",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.context
 
     @property
     def impl(self):
