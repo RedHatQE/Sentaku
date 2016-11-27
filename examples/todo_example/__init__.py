@@ -1,4 +1,8 @@
 
-import sentaku
+import dectate
 from . import pseudorpc
-sentaku.register_external_implementations_in(pseudorpc)
+from . import spec
+
+dectate.commit(spec.TodoAPI)
+
+__all__ = 'pseudorpc',

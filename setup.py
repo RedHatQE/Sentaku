@@ -15,6 +15,16 @@ setup(name="sentaku",
       setup_requires=[
           'setuptools_scm',
       ],
+      install_requires=[
+        'attrs',
+        'reg >= 0.10',
+        'dectate >= 0.12',
+        'importscan',
+      ],
+      extras_require={
+        'test': ['pytest'],
+        'examples': ['selenium'],
+      },
       classifiers=[
           "Topic :: Utilities",
           "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
