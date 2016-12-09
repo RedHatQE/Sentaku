@@ -14,27 +14,39 @@ let
       sha256="14hc65695r89x1ivm1gj3dcvsn2mk6a5ax01sl7s5cp1nyj8bfd3";
     };
   };
+  attrs = python35Packages.attrs.overrideDerivation (old: rec {
+    name = "attrs-${version}";
+    version = "16.3.0";
+    src = fetchurl {
+      url = "mirror://pypi/a/attrs/${name}.tar.gz";
+      sha256="1k1w8xg7mbd9r8624irnwnzlf3g8lqymba2sw6xz6diyf9vk2840";
+    };
+  });
+  env = buildEnv {
+    name = "sentaku-deps";
+    paths =
+    [
+      dectate attrs
+      python ipython
+      gitAndTools.gitFull
+      ncurses
+      bpython
+      setuptools_scm
+      pytest
+      requests2
+      selenium
+    ];
+  };
 in buildPythonPackage rec {
   name = "sentaku-test";
   src = ./.;
   buildInputs = [
-    gitFull
-    less
-    ncurses
-    openssh
-    bpython
-    sqlite
-    setuptools_scm
-    tox
-    pytest
     flake8
     sphinx
-    requests2
-    selenium
   ];
   checkPhase = "py.test";
 
-  propagatedBuildInputs = [dectate attrs];
+  propagatedBuildInputs = [env];
 
 
   shellHook=''
@@ -54,7 +66,7 @@ in buildPythonPackage rec {
   clean() {
     find -name \*.pyc -delete
     find -name __pycache__ -delete
-    rm -rf build/sphinx-doctrees build/htmldocs
+    rm -rf build/
   }
 
   build_fresh_docs() {
