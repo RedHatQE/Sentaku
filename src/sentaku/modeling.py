@@ -24,6 +24,7 @@ class Element(object):
         return self.context.impl
 
 
+@attr.s
 class Collection(Element):
     """base class for collections in the application
 

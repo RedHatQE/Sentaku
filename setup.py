@@ -16,7 +16,7 @@ setup(name="sentaku",
           'setuptools_scm',
       ],
       install_requires=[
-        'attrs',
+        'attrs >= 16.3.0',
         'reg >= 0.10',
         'dectate >= 0.12',
         'importscan',

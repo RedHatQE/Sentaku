@@ -98,6 +98,7 @@ class ImplementationContext(dectate.App):
             yield self.impl
 
 
+@attr.s
 class _ImplementationBindingMethod(object):
     """bound method equivalent for :class:`ImplementationCooser`
 
@@ -107,9 +108,8 @@ class _ImplementationBindingMethod(object):
     * freezes the context
     * calls the actual implementation
     """
-    def __init__(self, instance, selector):
-        self.instance = instance
-        self.selector = selector
+    instance = attr.ib()
+    selector = attr.ib()
 
     def __call__(self, *k, **kw):
         ctx = self.instance.context
@@ -138,9 +138,9 @@ class ContextualMethod(object):
            def action(self):
                pass
     """
-
+    # todo - turn into attrs class once attribute ancoring is implemented
     def __repr__(self):
-        return '<ContextualMethod>'.format()
+        return '<ContextualMethod>'
 
     def external_implementation_for(self, *implementations):
         return ImplementationContext.external_for(self, implementations, self)
@@ -152,8 +152,9 @@ class ContextualMethod(object):
 
 
 class ContextualProperty(object):
-
+    # todo - turn into attrs class once attribute ancoring is implemented
     def __init__(self):
+        # setter and getter currently are lookup keys
         self.setter = self, 'set'
         self.getter = self, 'get'
 
