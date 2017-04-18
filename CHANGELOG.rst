@@ -1,3 +1,8 @@
+0.6.1
+======
+
+* fix the typo i introduced while overconfidently commiting the bits for v0.6
+
 0.6
 ===
 
