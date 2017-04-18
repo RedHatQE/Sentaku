@@ -22,7 +22,7 @@ class ImplementationRegistrationAction(dectate.Action):
         methods[self.method][self.implementation] = obj
 
 
-@attr.s
+@attr.s(hash=False)
 class ImplementationContext(dectate.App):
     """ maintains a mapping
     of :ref:`implementation-identification` to implementations,
@@ -39,8 +39,10 @@ class ImplementationContext(dectate.App):
         in order of percedence
     :type default_choices: optional list
     """
+
     implementations = attr.ib()
     implementation_chooser = attr.ib(default=attr.Factory(ChooserStack), convert=ChooserStack)
+    strict_calls = attr.ib(default=False)
 
     external_for = dectate.directive(ImplementationRegistrationAction)
 
@@ -58,6 +60,7 @@ class ImplementationContext(dectate.App):
             self.implementations).value
 
     def _get_implementation_for(self, key):
+        self.commit()
         implementation_set = self.config.methods[key]
         return self.implementation_chooser.choose(implementation_set)
 
@@ -116,7 +119,7 @@ class _ImplementationBindingMethod(object):
         choice, implementation = ctx._get_implementation_for(self.selector)
         bound_method = implementation.__get__(
             self.instance, type(self.instance))
-        with ctx.use(choice, frozen=True):
+        with ctx.use(choice, frozen=ctx.strict_calls):
             return bound_method(*k, **kw)
 
 
@@ -143,7 +146,7 @@ class ContextualMethod(object):
         return '<ContextualMethod>'
 
     def external_implementation_for(self, *implementations):
-        return ImplementationContext.external_for(self, implementations, self)
+        return ImplementationContext.external_for(self, implementations)
 
     def __get__(self, instance, *_ignored):
         if instance is None:
