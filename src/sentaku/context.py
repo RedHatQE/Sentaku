@@ -41,7 +41,8 @@ class ImplementationContext(dectate.App):
     """
 
     implementations = attr.ib()
-    implementation_chooser = attr.ib(default=attr.Factory(ChooserStack), convert=ChooserStack)
+    implementation_chooser = attr.ib(
+        efault=attr.Factory(ChooserStack), convert=ChooserStack)
     strict_calls = attr.ib(default=False)
 
     external_for = dectate.directive(ImplementationRegistrationAction)
@@ -145,8 +146,8 @@ class ContextualMethod(object):
     def __repr__(self):
         return '<ContextualMethod>'
 
-    def external_implementation_for(self, *implementations):
-        return ImplementationContext.external_for(self, implementations)
+    def external_implementation_for(self, implementation):
+        return ImplementationContext.external_for(self, implementation)
 
     def __get__(self, instance, *_ignored):
         if instance is None:
