@@ -81,8 +81,8 @@ def main(search, query):
 
 
 def cli_main():
-    SearchContext.commit()
     """cli entrypoitns, sets up everything needed"""
+    SearchContext.commit()
     args = parser.parse_args()
     # open up a browser
     firefox_remote = Remote(
