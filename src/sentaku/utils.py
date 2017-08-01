@@ -6,7 +6,7 @@ from collections import Mapping
 import attr
 
 
-@attr.s
+@attr.s(frozen=True)
 class ImplementationName(object):
     """
     utility class to declare names for implementations
