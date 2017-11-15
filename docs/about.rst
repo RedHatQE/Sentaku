@@ -13,6 +13,7 @@ Installing
 ----------
 
 ::
+
 	pip install sentaku
 
 
@@ -37,4 +38,4 @@ desirable to run against the fast backend api or rest API,
 while when running the actual acceptance/system tests
 it is more desirable to run against the rich user interface or the rest API
 
-.. _Sentaku:: http:://pypi.python.org/pypi/sentaku
+.. _Sentaku: http:://pypi.python.org/pypi/sentaku
