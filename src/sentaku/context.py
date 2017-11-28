@@ -7,6 +7,12 @@ from .chooser import ChooserStack
 METHOD_DATA_KEY = 'sentaku_method_data'
 
 
+@contextlib.contextmanager
+def _use_maybe_strict(ctx, impl):
+    with ctx.use(impl, frozen=ctx.strict_calls) as impl:
+        yield impl
+
+
 @attr.s
 class ImplementationRegistrationAction(dectate.Action):
     config = {
@@ -48,11 +54,12 @@ class ImplementationContext(dectate.App):
     external_for = dectate.directive(ImplementationRegistrationAction)
 
     @classmethod
-    def with_default_choices(cls, implementations, default_choices):
+    def with_default_choices(cls, implementations, default_choices, **kw):
         return cls(
             implementations=implementations,
             implementation_chooser=default_choices,
-            )
+            **kw
+        )
 
     @property
     def impl(self):
@@ -66,7 +73,7 @@ class ImplementationContext(dectate.App):
         return self.implementation_chooser.choose(implementation_set)
 
     @classmethod
-    def from_instances(cls, instances):
+    def from_instances(cls, instances, **kw):
         """utility to create the context
 
         by passing a ordered list of instances
@@ -75,6 +82,7 @@ class ImplementationContext(dectate.App):
         return cls.with_default_choices(
             implementations={type(x): x for x in instances},
             default_choices=[type(x) for x in instances],
+            **kw
         )
 
     @property
@@ -120,7 +128,7 @@ class _ImplementationBindingMethod(object):
         choice, implementation = ctx._get_implementation_for(self.selector)
         bound_method = implementation.__get__(
             self.instance, type(self.instance))
-        with ctx.use(choice, frozen=ctx.strict_calls):
+        with _use_maybe_strict(ctx, choice):
             return bound_method(*k, **kw)
 
 
@@ -174,7 +182,7 @@ class ContextualProperty(object):
         choice, implementation = ctx._get_implementation_for(self.setter)
 
         bound_method = implementation.__get__(instance, type(instance))
-        with ctx.use(choice, frozen=True):
+        with _use_maybe_strict(ctx, choice):
             return bound_method(value)
 
     def __get__(self, instance, owner):
@@ -185,5 +193,5 @@ class ContextualProperty(object):
         choice, implementation = ctx._get_implementation_for(self.getter)
 
         bound_method = implementation.__get__(instance, type(instance))
-        with ctx.use(choice, frozen=True):
+        with _use_maybe_strict(ctx, choice):
             return bound_method()

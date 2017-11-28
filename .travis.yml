@@ -6,7 +6,9 @@ python:
   - "3.4"
   - "3.5"
   - "nightly" # currently points to 3.6-dev
-install: pip install pytest .
+install:
+  - pip install -U pytest setuptools_scm
+  - pip install -e .
 script: "py.test"
 deploy:
   provider: pypi
