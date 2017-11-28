@@ -186,4 +186,4 @@ class ContextualProperty(object):
 
         bound_method = implementation.__get__(instance, type(instance))
         with ctx.use(choice, frozen=True):
-            return bound_method()
+            return bound_method
