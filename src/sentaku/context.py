@@ -7,12 +7,6 @@ from .chooser import ChooserStack
 METHOD_DATA_KEY = "sentaku_method_data"
 
 
-@contextlib.contextmanager
-def _use_maybe_strict(ctx, impl):
-    with ctx.use(impl, frozen=ctx.strict_calls) as impl:
-        yield impl
-
-
 @attr.s
 class ImplementationRegistrationAction(dectate.Action):
     config = {"methods": lambda: defaultdict(dict)}
@@ -109,6 +103,22 @@ class ImplementationContext(dectate.App):
         ):
             yield self.impl
 
+    @contextlib.contextmanager
+    def use_strict(self, impl):
+        with self.use(impl, frozen=True) as imp:
+            yield imp
+
+    @contextlib.contextmanager
+    def use_preferred(self, impl):
+        with self.implementation_chooser.pushed_preferred([impl]) as imp:
+            yield imp
+
+    @contextlib.contextmanager
+    def use_for_call(self, impl):
+        ctx = self.use_strict if self.strict_calls else self.use_preferred
+        with ctx(impl) as imp:
+            yield imp
+
 
 @attr.s
 class _ImplementationBindingMethod(object):
@@ -127,7 +137,7 @@ class _ImplementationBindingMethod(object):
         ctx = self.instance.context
         choice, implementation = ctx._get_implementation_for(self.selector)
         bound_method = implementation.__get__(self.instance, type(self.instance))
-        with _use_maybe_strict(ctx, choice):
+        with ctx.use_for_call(choice):
             return bound_method(*k, **kw)
 
 
@@ -181,7 +191,7 @@ class ContextualProperty(object):
         choice, implementation = ctx._get_implementation_for(self.setter)
 
         bound_method = implementation.__get__(instance, type(instance))
-        with _use_maybe_strict(ctx, choice):
+        with ctx.use_for_call(choice):
             return bound_method(value)
 
     def __get__(self, instance, owner):
@@ -192,5 +202,5 @@ class ContextualProperty(object):
         choice, implementation = ctx._get_implementation_for(self.getter)
 
         bound_method = implementation.__get__(instance, type(instance))
-        with _use_maybe_strict(ctx, choice):
+        with ctx.use_for_call(choice):
             return bound_method()

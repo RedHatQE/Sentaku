@@ -83,3 +83,22 @@ class ChooserStack(object):
             yield
         finally:
             self.current = self.current.previous
+
+    @contextmanager
+    def pushed_preferred(self, new_preferences):
+        assert set(new_preferences).intersection(self.current.elements)
+        new = [
+            x for x in self.current.elements
+            if x in new_preferences
+        ] + [
+            x for x in self.current.elements
+            if x not in new_preferences
+        ]
+
+        self.current = Chooser.make(self.current, new, False)
+        try:
+            if len(chain(self.current)) > LIMIT:
+                raise OverflowError("stack depth exceeded")
+            yield
+        finally:
+            self.current = self.current.previous
