@@ -10,7 +10,7 @@ from collections import namedtuple
 
 LIMIT = 20
 
-ImplementationChoice = namedtuple("ImplementationChoice", "key, value")
+ImplementationChoice = namedtuple('ImplementationChoice', 'key, implementation, is_fallback')
 
 
 class Chooser(namedtuple("Chooser", "elements, previous, frozen")):
@@ -34,7 +34,7 @@ class Chooser(namedtuple("Chooser", "elements, previous, frozen")):
 
         for choice in self.elements:
             if choice in choose_from:
-                return ImplementationChoice(choice, choose_from[choice])
+                return ImplementationChoice(choice, choose_from[choice], False)
         raise LookupError(self.elements, choose_from.keys())
 
 
@@ -73,6 +73,14 @@ class ChooserStack(object):
         returns a key value pair
         """
         return self.current.choose(choose_from)
+
+    def choose_or_fallback(self, choose_from, fallback):
+        try:
+            return self.choose(choose_from)
+        except LookupError:
+            if fallback is None:
+                raise
+            return fallback
 
     @contextmanager
     def pushed(self, new, frozen=False):
