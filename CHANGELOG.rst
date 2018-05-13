@@ -1,10 +1,22 @@
-0.6.1
+v0.6.3
+======
+
+
+* upgrade attrs to at least 17.0.0 and s/convert/converter/
+
+v0.6.2
+======
+
+* contextual property strictness
+* freeze ImplementationName
+
+v0.6.1
 ======
 
 * fix the typo i introduced while overconfidently commiting the bits for v0.6
 
-0.6
-===
+v0.6
+====
 
 * fix latent bug in legacy external implementation registration
   by taking away multi value registration,
@@ -15,21 +27,21 @@
 * split Element behaviour into ElementMixing to allow reuse with different inheritance trees
 
 
-0.5
-===
+v0.5
+====
 
 * switch registration to dectate
 * require custom context classes for registration of implementations and overriding
 
-0.4
-===
+v0.4
+====
 
 * add ImplementationContext.from_instances
 * add contextual properties
 
 
 
-0.2
+v0.2
 ====
 
 * added implementationcontext.from_instances
