@@ -16,8 +16,8 @@ from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 parser = argparse.ArgumentParser()
-parser.add_argument('query')
-parser.add_argument('--fast', action='store_true')
+parser.add_argument("query")
+parser.add_argument("--fast", action="store_true")
 
 
 @attr.s
@@ -40,7 +40,7 @@ class SearchContext(sentaku.ImplementationContext):
 @attr.s
 class Search(sentaku.Element):
     """sentaku element for really simple pypi searching"""
-    base_url = attr.ib(default='https://pypi.python.org/pypi')
+    base_url = attr.ib(default="https://pypi.python.org/pypi")
 
     search = sentaku.ContextualMethod()
     open_page = sentaku.ContextualMethod()
@@ -51,12 +51,12 @@ def search_browser(self, text):
     """do a slow search via the website and return the first match"""
     self.impl.get(self.base_url)
 
-    search_div = self.impl.find_element_by_id('search')
-    search_term = search_div.find_element_by_id('term')
+    search_div = self.impl.find_element_by_id("search")
+    search_term = search_div.find_element_by_id("term")
     search_term.send_keys(text)
-    search_div.find_element_by_id('submit').click()
-    e = self.impl.find_element_by_css_selector('table.list tr td a')
-    return e.get_attribute('href')
+    search_div.find_element_by_id("submit").click()
+    e = self.impl.find_element_by_css_selector("table.list tr td a")
+    return e.get_attribute("href")
 
 
 @SearchContext.external_for(Search.search, FastSearch)
@@ -64,8 +64,9 @@ def search_fast(self, text):
     """do a sloppy quick "search" via the json index"""
 
     resp = self.impl.get(
-        '{base_url}/{text}/json'.format(base_url=self.base_url, text=text))
-    return resp.json()['info']['package_url']
+        "{base_url}/{text}/json".format(base_url=self.base_url, text=text)
+    )
+    return resp.json()["info"]["package_url"]
 
 
 @SearchContext.external_for(Search.open_page, Browser)
@@ -85,9 +86,7 @@ def cli_main():
     SearchContext.commit()
     args = parser.parse_args()
     # open up a browser
-    firefox_remote = Remote(
-        'http://127.0.0.1:4444/wd/hub',
-        DesiredCapabilities.FIREFOX)
+    firefox_remote = Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.FIREFOX)
     with contextlib.closing(firefox_remote):
         context = SearchContext.from_instances([FastSearch(), Browser(firefox_remote)])
         search = Search(parent=context)
@@ -100,5 +99,5 @@ def cli_main():
                 main(search, args.query)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli_main()

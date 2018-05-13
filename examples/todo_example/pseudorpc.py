@@ -37,7 +37,7 @@ def todo_item_set_item_completion(item, value):
     if value:
         item.impl.complete_item(item.parent.name, item.name)
     else:
-        raise NotImplementedError('rpc cant undo completion')
+        raise NotImplementedError("rpc cant undo completion")
 
 
 @spec.TodoAPI.external_for(spec.TodoCollection.create_item, spec.ViaRPC)

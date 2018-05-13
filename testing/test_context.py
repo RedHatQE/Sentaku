@@ -1,17 +1,13 @@
-from sentaku.context import (
-    ImplementationContext,
-    ContextualProperty,
-    ContextualMethod,
-)
+from sentaku.context import ImplementationContext, ContextualProperty, ContextualMethod
 from sentaku import Element
 
 import pytest
 
 
 def test_from_instances():
-    ctx = ImplementationContext.from_instances([1, 'a'])
+    ctx = ImplementationContext.from_instances([1, "a"])
     assert ctx.implementation_chooser.current.elements == [int, str]
-    assert ctx.implementations == {int: 1, str: 'a'}
+    assert ctx.implementations == {int: 1, str: "a"}
 
 
 class LocalContext(ImplementationContext):
@@ -30,15 +26,18 @@ class LocalElement(Element):
 @LocalContext.external_for(LocalElement.prop.getter, int)
 @LocalContext.external_for(LocalElement.prop.getter, str)
 def method_standin(self, value=None):
-    assert self.context.implementation_chooser.current.frozen == self.context.strict_calls
+    assert (
+        self.context.implementation_chooser.current.frozen == self.context.strict_calls
+    )
 
 
-@pytest.fixture(params=[
-    pytest.param(True, id='nest=strict'),
-    pytest.param(False, id='nest=lenient'),
-])
+@pytest.fixture(
+    params=[
+        pytest.param(True, id="nest=strict"), pytest.param(False, id="nest=lenient")
+    ]
+)
 def ctx(request):
-    return LocalContext.from_instances([1, 'a'], strict_calls=request.param)
+    return LocalContext.from_instances([1, "a"], strict_calls=request.param)
 
 
 @pytest.fixture

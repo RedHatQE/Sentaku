@@ -4,7 +4,7 @@ import dectate
 from collections import defaultdict
 from .chooser import ChooserStack
 
-METHOD_DATA_KEY = 'sentaku_method_data'
+METHOD_DATA_KEY = "sentaku_method_data"
 
 
 @contextlib.contextmanager
@@ -15,9 +15,7 @@ def _use_maybe_strict(ctx, impl):
 
 @attr.s
 class ImplementationRegistrationAction(dectate.Action):
-    config = {
-        'methods': lambda: defaultdict(dict)
-    }
+    config = {"methods": lambda: defaultdict(dict)}
     method = attr.ib()
     implementation = attr.ib()
 
@@ -48,7 +46,8 @@ class ImplementationContext(dectate.App):
 
     implementations = attr.ib()
     implementation_chooser = attr.ib(
-        default=attr.Factory(ChooserStack), convert=ChooserStack)
+        default=attr.Factory(ChooserStack), convert=ChooserStack
+    )
     strict_calls = attr.ib(default=False)
 
     external_for = dectate.directive(ImplementationRegistrationAction)
@@ -64,8 +63,7 @@ class ImplementationContext(dectate.App):
     @property
     def impl(self):
         """the currently active implementation"""
-        return self.implementation_chooser.choose(
-            self.implementations).value
+        return self.implementation_chooser.choose(self.implementations).value
 
     def _get_implementation_for(self, key):
         self.commit()
@@ -102,11 +100,13 @@ class ImplementationContext(dectate.App):
             the implementations availiable within the context
         :keyword bool frozen: if True prevent further nesting
         """
+
         def _get_frozen(frozen=False):
             return frozen
 
         with self.implementation_chooser.pushed(
-                implementation_types, frozen=_get_frozen(**kw)):
+            implementation_types, frozen=_get_frozen(**kw)
+        ):
             yield self.impl
 
 
@@ -126,8 +126,7 @@ class _ImplementationBindingMethod(object):
     def __call__(self, *k, **kw):
         ctx = self.instance.context
         choice, implementation = ctx._get_implementation_for(self.selector)
-        bound_method = implementation.__get__(
-            self.instance, type(self.instance))
+        bound_method = implementation.__get__(self.instance, type(self.instance))
         with _use_maybe_strict(ctx, choice):
             return bound_method(*k, **kw)
 
@@ -152,7 +151,7 @@ class ContextualMethod(object):
     """
     # todo - turn into attrs class once attribute ancoring is implemented
     def __repr__(self):
-        return '<ContextualMethod>'
+        return "<ContextualMethod>"
 
     def external_implementation_for(self, implementation):
         return ImplementationContext.external_for(self, implementation)
@@ -167,8 +166,8 @@ class ContextualProperty(object):
     # todo - turn into attrs class once attribute ancoring is implemented
     def __init__(self):
         # setter and getter currently are lookup keys
-        self.setter = self, 'set'
-        self.getter = self, 'get'
+        self.setter = self, "set"
+        self.getter = self, "get"
 
     def external_setter_implemented_for(self, implementation):
         return ImplementationContext.external_for(self.setter, implementation)

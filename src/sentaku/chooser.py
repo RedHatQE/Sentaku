@@ -7,18 +7,20 @@ context roots and help picking implementations
 """
 from contextlib import contextmanager
 from collections import namedtuple
+
 LIMIT = 20
 
-ImplementationChoice = namedtuple('ImplementationChoice', 'key, value')
+ImplementationChoice = namedtuple("ImplementationChoice", "key, value")
 
 
-class Chooser(namedtuple('Chooser', 'elements, previous, frozen')):
+class Chooser(namedtuple("Chooser", "elements, previous, frozen")):
 
     @classmethod
     def make(cls, current, elements, frozen):
         if current is not None and current.frozen:
             raise RuntimeError(
-                'further nesting of implementation choice has been disabled')
+                "further nesting of implementation choice has been disabled"
+            )
         if frozen:
             assert len(elements) == 1
 
@@ -40,7 +42,7 @@ class NullChooser(object):
     frozen = False
 
     def choose(self, *_, **__):
-        raise LookupError('No choice possible without valid context')
+        raise LookupError("No choice possible without valid context")
 
 
 def chain(element):
@@ -57,13 +59,13 @@ class ChooserStack(object):
     def __init__(self, default_elements=None):
         if default_elements is not None:
             self.current = Chooser(
-                elements=default_elements,
-                previous=NullChooser(), frozen=False)
+                elements=default_elements, previous=NullChooser(), frozen=False
+            )
         else:
             self.current = NullChooser()
 
     def __repr__(self):
-        return '<ICS {chain}>'.format(chain=chain(self.current))
+        return "<ICS {chain}>".format(chain=chain(self.current))
 
     def choose(self, choose_from):
         """given a mapping of implementations

@@ -13,7 +13,7 @@ the getting started guide is based on the :ref:`mini-example`
    and preparing them.
 
   .. literalinclude:: ../examples/mini_example.py
-    :pyobject: Browser, FastSearch  
+    :pyobject: Browser, FastSearch
 
 3. declaring a context type for your application
 

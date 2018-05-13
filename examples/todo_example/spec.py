@@ -2,9 +2,9 @@ import attr
 import sentaku
 from .ux import TodoUX
 
-ViaAPI = sentaku.ImplementationName('API')
-ViaUX = sentaku.ImplementationName('UX')
-ViaRPC = sentaku.ImplementationName('RPC')
+ViaAPI = sentaku.ImplementationName("API")
+ViaUX = sentaku.ImplementationName("UX")
+ViaRPC = sentaku.ImplementationName("RPC")
 
 
 class TodoAPI(sentaku.ImplementationContext):
@@ -18,6 +18,7 @@ class TodoAPI(sentaku.ImplementationContext):
         """
         ux = TodoUX(api)
         from .pseudorpc import PseudoRpc
+
         rpc = PseudoRpc(api)
 
         return cls({ViaAPI: api, ViaUX: ux, ViaRPC: rpc})

@@ -25,10 +25,11 @@ class AttributeBasedImplementations(Mapping):
         attribute_name = self.attribute_mapping[key]
         result = getattr(self.holder, attribute_name, self)
         if result is self:
-            raise LookupError('{holder!r} has no attribute {name}'.format(
-                holder=self.holder,
-                name=attribute_name,
-            ))
+            raise LookupError(
+                "{holder!r} has no attribute {name}".format(
+                    holder=self.holder, name=attribute_name
+                )
+            )
         return result
 
     def __iter__(self):

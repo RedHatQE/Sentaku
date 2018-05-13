@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .cache/
+.pytest_cache/
 .eggs/
 .ipynb_checkpoints/
 .tox/

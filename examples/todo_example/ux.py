@@ -1,8 +1,8 @@
-
 class TodoUX(object):
     """
     example root UX fore todo lists
     """
+
     def __init__(self, app):
         self.app = app
 
@@ -77,6 +77,7 @@ class TodoElementUX(object):
         the controlled TodoElement
 
     """
+
     def __init__(self, parent, controlled_element):
         self.parent = parent
         self.controlled_element = controlled_element

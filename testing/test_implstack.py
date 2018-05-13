@@ -29,15 +29,16 @@ def tet_overflow(chooser):
     def nest(n=21):
         if n:
             with chooser.pushed([1]):
-                nest(n=n-1)
+                nest(n=n - 1)
+
     with pytest.raises(OverflowError):
         nest()
 
 
 def test_choose(chooser):
     with chooser.pushed([1, 2]):
-        res = chooser.choose({1: 'a'})
-    assert res == (1, 'a')
+        res = chooser.choose({1: "a"})
+    assert res == (1, "a")
 
 
 def test_choose_missing(chooser):

@@ -13,7 +13,7 @@
   in order to keep legacy code working
 * add a feature to allow non-strict method calls that allow nesting
 * split Element behaviour into ElementMixing to allow reuse with different inheritance trees
-  
+
 
 0.5
 ===
