@@ -46,7 +46,7 @@ class ImplementationContext(dectate.App):
 
     implementations = attr.ib()
     implementation_chooser = attr.ib(
-        default=attr.Factory(ChooserStack), convert=ChooserStack
+        default=attr.Factory(ChooserStack), converter=ChooserStack
     )
     strict_calls = attr.ib(default=False)
 

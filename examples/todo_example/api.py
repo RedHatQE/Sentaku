@@ -34,7 +34,7 @@ class TodoList(object):
     """a named todolist"""
 
     name = attr.ib()
-    items = attr.ib(default=attr.Factory(list), convert=list)
+    items = attr.ib(default=attr.Factory(list), converter=list)
 
     def __iter__(self):
         return iter(self.items)
@@ -55,7 +55,7 @@ class TodoApp(object):
     A Basic Todo List Storage
 
     """
-    collections = attr.ib(default=attr.Factory(list), convert=list)
+    collections = attr.ib(default=attr.Factory(list), converter=list)
 
     def __iter__(self):
         return iter(self.collections)

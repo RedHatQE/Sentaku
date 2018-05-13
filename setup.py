@@ -15,7 +15,7 @@ setup(
     package_dir={"": "src"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "attrs >= 16.3.0", "reg >= 0.10", "dectate >= 0.12", "importscan"
+        "attrs >= 17.4.0", "reg >= 0.10", "dectate >= 0.12", "importscan"
     ],
     extras_require={"test": ["pytest"], "examples": ["selenium"]},
     classifiers=[
