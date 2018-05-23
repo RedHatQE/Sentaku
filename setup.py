@@ -15,7 +15,10 @@ setup(
     package_dir={"": "src"},
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "attrs >= 17.4.0", "reg >= 0.10", "dectate >= 0.12", "importscan"
+        "attrs >= 17.4.0",
+        "reg >= 0.10",
+        "dectate >= 0.12",
+        "importscan",
     ],
     extras_require={"test": ["pytest"], "examples": ["selenium"]},
     classifiers=[
@@ -25,6 +28,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Intended Audience :: Developers",
         "Development Status :: 4 - Beta",
     ],
