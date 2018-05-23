@@ -5,4 +5,4 @@ from . import spec
 
 dectate.commit(spec.TodoAPI)
 
-__all__ = "pseudorpc",
+__all__ = ("pseudorpc",)

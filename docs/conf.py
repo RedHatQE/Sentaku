@@ -8,7 +8,10 @@ sys.path.insert(0, os.path.abspath("../examples"))
 __distribution = pkg_resources.get_distribution("Sentaku")
 
 extensions = [
-    "sphinx.ext.autodoc", "sphinx.ext.doctest", "sphinx.ext.viewcode", "sphinx.ext.todo"
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.todo",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

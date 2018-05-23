@@ -33,7 +33,8 @@ def method_standin(self, value=None):
 
 @pytest.fixture(
     params=[
-        pytest.param(True, id="nest=strict"), pytest.param(False, id="nest=lenient")
+        pytest.param(True, id="nest=strict"),
+        pytest.param(False, id="nest=lenient"),
     ]
 )
 def ctx(request):
