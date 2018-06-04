@@ -11,6 +11,7 @@ class ImplementationName(object):
     """
     utility class to declare names for implementations
     """
+
     name = attr.ib()
     documentation = attr.ib(repr=False, default=None)
 

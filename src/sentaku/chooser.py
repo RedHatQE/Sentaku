@@ -14,7 +14,6 @@ ImplementationChoice = namedtuple("ImplementationChoice", "key, value")
 
 
 class Chooser(namedtuple("Chooser", "elements, previous, frozen")):
-
     @classmethod
     def make(cls, current, elements, frozen):
         if current is not None and current.frozen:
@@ -55,7 +54,6 @@ def chain(element):
 
 
 class ChooserStack(object):
-
     def __init__(self, default_elements=None):
         if default_elements is not None:
             self.current = Chooser(

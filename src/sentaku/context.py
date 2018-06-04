@@ -120,6 +120,7 @@ class _ImplementationBindingMethod(object):
     * freezes the context
     * calls the actual implementation
     """
+
     instance = attr.ib()
     selector = attr.ib()
 
@@ -149,6 +150,7 @@ class ContextualMethod(object):
            def action(self):
                pass
     """
+
     # todo - turn into attrs class once attribute ancoring is implemented
     def __repr__(self):
         return "<ContextualMethod>"

@@ -40,6 +40,7 @@ class SearchContext(sentaku.ImplementationContext):
 @attr.s
 class Search(sentaku.Element):
     """sentaku element for really simple pypi searching"""
+
     base_url = attr.ib(default="https://pypi.python.org/pypi")
 
     search = sentaku.ContextualMethod()

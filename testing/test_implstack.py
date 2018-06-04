@@ -25,7 +25,6 @@ def test_freezing(chooser):
 
 
 def tet_overflow(chooser):
-
     def nest(n=21):
         if n:
             with chooser.pushed([1]):

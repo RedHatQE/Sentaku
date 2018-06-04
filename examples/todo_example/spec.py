@@ -29,6 +29,7 @@ class TodoAPI(sentaku.ImplementationContext):
 @attr.s
 class TodoItem(sentaku.Element):
     """describing a todo list element"""
+
     name = attr.ib()
     completed = sentaku.ContextualProperty()
 
@@ -43,6 +44,7 @@ def create_todo_collection(self, name):
 @attr.s
 class TodoCollection(sentaku.Collection):
     """domain object describing a todo list"""
+
     name = attr.ib()
     create_item = sentaku.ContextualMethod()
     get_by = sentaku.ContextualMethod()

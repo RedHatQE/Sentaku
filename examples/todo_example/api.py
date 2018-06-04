@@ -17,7 +17,6 @@ def get_by(self, name):
 
 
 def create_by_name(cls, collection_name):
-
     def create_item(self, name):
         "create a new named %r item"
         assert self.get_by(name) is None
@@ -55,6 +54,7 @@ class TodoApp(object):
     A Basic Todo List Storage
 
     """
+
     collections = attr.ib(default=attr.Factory(list), converter=list)
 
     def __iter__(self):
