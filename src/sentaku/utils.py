@@ -2,8 +2,13 @@
 
     utility classes for implementation lookup
 """
-from collections import Mapping
+import sys
 import attr
+
+if sys.version_info[0] == 3:
+    from collections.abc import Mapping
+else:
+    from collections import Mapping
 
 
 @attr.s(frozen=True)
