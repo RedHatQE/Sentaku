@@ -1,3 +1,9 @@
+v0.7.2
+=======
+
+* loosen dependency on attrs
+
+
 v0.7.1
 ======
 
