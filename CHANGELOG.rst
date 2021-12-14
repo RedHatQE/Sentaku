@@ -1,3 +1,14 @@
+v0.7.0
+=======
+
+* update to setup.cfg metadata and modernize build
+* drop python <3.6 support
+* update pre-commiting
+* drop the long deprecated reigster_external_implementations helper
+* drop unnneeded reg/importscan requirements
+* upgrade attrs to 20.x
+
+
 v0.6.3
 ======
 
