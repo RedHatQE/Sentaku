@@ -6,7 +6,7 @@ from . import spec
 
 
 @attr.s
-class PseudoRpc(object):
+class PseudoRpc:
     """a hideous implementation"""
 
     _backend = attr.ib(repr=False)

@@ -37,7 +37,7 @@ class Chooser(namedtuple("Chooser", "elements, previous, frozen")):
         raise LookupError(self.elements, choose_from.keys())
 
 
-class NullChooser(object):
+class NullChooser:
     frozen = False
 
     def choose(self, *_, **__):
@@ -53,7 +53,7 @@ def chain(element):
     return elements
 
 
-class ChooserStack(object):
+class ChooserStack:
     def __init__(self, default_elements=None):
         if default_elements is not None:
             self.current = Chooser(
@@ -63,7 +63,7 @@ class ChooserStack(object):
             self.current = NullChooser()
 
     def __repr__(self):
-        return "<ICS {chain}>".format(chain=chain(self.current))
+        return f"<ICS {chain(self.current)}>"
 
     def choose(self, choose_from):
         """given a mapping of implementations

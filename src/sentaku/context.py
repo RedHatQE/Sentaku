@@ -28,7 +28,7 @@ class ImplementationRegistrationAction(dectate.Action):
 
 @attr.s(hash=False)
 class ImplementationContext(dectate.App):
-    """ maintains a mapping
+    """maintains a mapping
     of :ref:`implementation-identification` to implementations,
     as well as the list of currently availiable Implementations
     in the order of precedence.
@@ -111,7 +111,7 @@ class ImplementationContext(dectate.App):
 
 
 @attr.s
-class _ImplementationBindingMethod(object):
+class _ImplementationBindingMethod:
     """bound method equivalent for :class:`ImplementationCooser`
 
     on call it:
@@ -132,7 +132,7 @@ class _ImplementationBindingMethod(object):
             return bound_method(*k, **kw)
 
 
-class ContextualMethod(object):
+class ContextualMethod:
     """
     descriptor for implementing context sensitive methods
     and registration of their implementations
@@ -164,7 +164,7 @@ class ContextualMethod(object):
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty(object):
+class ContextualProperty:
     # todo - turn into attrs class once attribute ancoring is implemented
     def __init__(self):
         # setter and getter currently are lookup keys

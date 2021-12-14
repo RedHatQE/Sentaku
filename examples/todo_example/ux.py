@@ -1,4 +1,4 @@
-class TodoUX(object):
+class TodoUX:
     """
     example root UX fore todo lists
     """
@@ -24,7 +24,7 @@ class TodoUX(object):
         return TodoListUX(ux=self, controlled_list=item)
 
 
-class TodoListUX(object):
+class TodoListUX:
     """
     example ux for single todo lists
     .. attribute:: ux
@@ -64,7 +64,7 @@ class TodoListUX(object):
         self.controlled_list.clear_completed()
 
 
-class TodoElementUX(object):
+class TodoElementUX:
     """
     ux controller element for a todo list element
 

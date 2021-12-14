@@ -21,12 +21,12 @@ parser.add_argument("--fast", action="store_true")
 
 
 @attr.s
-class FastSearch(object):
+class FastSearch:
     get = staticmethod(requests.get)
 
 
 @attr.s
-class Browser(object):
+class Browser:
     driver = attr.ib()
 
     def __getattr__(self, key):
@@ -57,7 +57,8 @@ def search_browser(self, text):
     search_div.send_keys(text)
     # click the search button to initiate search
     search_div.find_element_by_xpath(
-        '//*[@id="content"]//div//button[contains(@type, "submit")]').click()
+        '//*[@id="content"]//div//button[contains(@type, "submit")]'
+    ).click()
     # get the first element from the list of found items
     e = self.impl.find_element_by_xpath('//*[@id="content"]//li[1]/a')
     return e.get_attribute("href")
@@ -67,9 +68,7 @@ def search_browser(self, text):
 def search_fast(self, text):
     """do a sloppy quick "search" via the json index"""
 
-    resp = self.impl.get(
-        "{base_url}/{text}/json".format(base_url=self.base_url, text=text)
-    )
+    resp = self.impl.get(f"{self.base_url}/{text}/json")
     return resp.json()["info"]["package_url"]
 
 

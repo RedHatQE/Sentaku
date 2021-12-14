@@ -2,17 +2,14 @@
 
     utility classes for implementation lookup
 """
-import sys
 import attr
 
-if sys.version_info[0] == 3:
-    from collections.abc import Mapping
-else:
-    from collections import Mapping
+
+from collections.abc import Mapping
 
 
 @attr.s(frozen=True)
-class ImplementationName(object):
+class ImplementationName:
     """
     utility class to declare names for implementations
     """

@@ -2,7 +2,7 @@ import attr
 
 
 @attr.s
-class TodoElement(object):
+class TodoElement:
     """
     Element of a todo list
     """
@@ -29,7 +29,7 @@ def create_by_name(cls, collection_name):
 
 
 @attr.s
-class TodoList(object):
+class TodoList:
     """a named todolist"""
 
     name = attr.ib()
@@ -49,7 +49,7 @@ class TodoList(object):
 
 
 @attr.s
-class TodoApp(object):
+class TodoApp:
     """
     A Basic Todo List Storage
 
@@ -61,7 +61,7 @@ class TodoApp(object):
         return iter(self.collections)
 
     def __repr__(self):
-        return "<TodoApp %r>" % (sorted(x.name for x in self.collections),)
+        return f"<TodoApp {sorted(x.name for x in self.collections)!r}>"
 
     get_by = get_by
     create_item = create_by_name(TodoList, "collections")

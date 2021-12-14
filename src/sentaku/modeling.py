@@ -1,7 +1,7 @@
 import attr
 
 
-class ElementMixin(object):
+class ElementMixin:
     @property
     def context(self):
         """the context this element belongs to"""

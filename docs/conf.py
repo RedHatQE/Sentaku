@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 import os
 import pkg_resources
@@ -21,8 +20,8 @@ master_doc = "index"
 
 # General information about the project.
 project = __distribution.project_name
-copyright = u"2016, Ronny Pfannschmidt"
-author = u"Ronny Pfannschmidt"
+copyright = "2016, Ronny Pfannschmidt"
+author = "Ronny Pfannschmidt"
 
 release = __distribution.version
 version = ".".join(release.split(".")[:2])
