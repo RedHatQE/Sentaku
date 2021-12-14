@@ -1,7 +1,7 @@
 v0.7.1
 ======
 
-* bugfix typo in release pipeline 💩 
+* bugfix typo in release pipeline 💩
 
 v0.7.0
 =======
