@@ -9,7 +9,7 @@ def api():
 
 
 @pytest.mark.parametrize("impl", [spec.ViaAPI, spec.ViaUX, spec.ViaRPC])
-def test_simple(api, impl):
+def test_simple(api: spec.TodoAPI, impl):
     with api.use(impl):
         assert api.implementation_chooser.current.elements == (impl,)
         collection = api.create_collection(name="test")

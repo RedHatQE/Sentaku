@@ -5,8 +5,11 @@ and fallback preferences
 based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
+from __future__ import annotations
 from contextlib import contextmanager
 from collections import namedtuple
+from typing_extensions import TypeAlias
+from typing import Union
 
 LIMIT = 20
 
@@ -44,11 +47,14 @@ class NullChooser:
         raise LookupError("No choice possible without valid context")
 
 
-def chain(element):
-    elements = []
-    while not isinstance(element, NullChooser):
-        elements.append(element)
-        element = element.previous
+CHOOSER: TypeAlias = Union[NullChooser, Chooser]
+
+
+def chain(chooser: CHOOSER) -> list[Chooser]:
+    elements: list[Chooser] = []
+    while not isinstance(chooser, NullChooser):
+        elements.append(chooser)
+        chooser = chooser.previous
     elements.reverse()
     return elements
 

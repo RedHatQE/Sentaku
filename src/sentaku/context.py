@@ -1,4 +1,7 @@
+from __future__ import annotations
 import contextlib
+from typing import overload
+
 import attr
 import dectate
 from collections import defaultdict
@@ -15,7 +18,7 @@ def _use_maybe_strict(ctx, impl):
 
 @attr.s
 class ImplementationRegistrationAction(dectate.Action):
-    config = {"methods": lambda: defaultdict(dict)}
+    config = {"methods": lambda: defaultdict(dict)}  # type: ignore[var-annotated]
     method = attr.ib()
     implementation = attr.ib()
 
@@ -57,7 +60,7 @@ class ImplementationContext(dectate.App):
         return cls(
             implementations=implementations,
             implementation_chooser=default_choices,
-            **kw
+            **kw,
         )
 
     @property
@@ -80,7 +83,7 @@ class ImplementationContext(dectate.App):
         return cls.with_default_choices(
             implementations={type(x): x for x in instances},
             default_choices=[type(x) for x in instances],
-            **kw
+            **kw,
         )
 
     @property
@@ -158,7 +161,17 @@ class ContextualMethod:
     def external_implementation_for(self, implementation):
         return ImplementationContext.external_for(self, implementation)
 
-    def __get__(self, instance, *_ignored):
+    @overload
+    def __get__(self, instance: None, owner: object) -> ContextualMethod:
+        ...
+
+    @overload
+    def __get__(self, instance: object, owner: object) -> _ImplementationBindingMethod:
+        ...
+
+    def __get__(
+        self, instance: object, owner: object
+    ) -> ContextualMethod | _ImplementationBindingMethod:
         if instance is None:
             return self
         return _ImplementationBindingMethod(instance=instance, selector=self)
@@ -178,7 +191,6 @@ class ContextualProperty:
         return ImplementationContext.external_for(self.getter, implementation)
 
     def __set__(self, instance, value):
-
         ctx = instance.context
         choice, implementation = ctx._get_implementation_for(self.setter)
 
