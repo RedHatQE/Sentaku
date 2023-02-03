@@ -1,5 +1,0 @@
-max-line-length: 120
-
-pylint:
-  disable:
-    - function-redefined
