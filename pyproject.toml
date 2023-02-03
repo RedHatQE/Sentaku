@@ -79,8 +79,9 @@ build = """sphinx-build -b html \
 
 
 
-[tool.pytest.legacy_ini]
-testdirs = ["./testing"]
+[tool.pytest.ini_options]
+testpaths = ["./testing"]
+pythonpath = ["./examples"]
 
 [tool.mypy]
 python_version="3.8"
