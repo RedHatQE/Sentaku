@@ -27,3 +27,7 @@ repos:
       additional_dependencies:
       - types-requests
       - attrs
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: "0.6.0"
+  hooks:
+    - id: pyproject-fmt

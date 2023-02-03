@@ -1,17 +1,22 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs",
+  "hatchling",
+]
 
 [project]
 name = "sentaku"
-dynamic = ["version"]
+dynamic = [
+  "version",
+]
 description = "variadic ux implementation for testing"
 readme = "README.rst"
 license = "MPL-2.0"
 requires-python = ">=3.8"
 
 keywords = [
-    "testing",
+  "testing",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -26,9 +31,9 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "typing-extensions",
-    "attrs >= 19.0.0",
-    "dectate >= 0.12",
+  "attrs>=19",
+  "dectate>=0.12",
+  "typing-extensions",
 ]
 
 [[project.authors]]
@@ -37,15 +42,15 @@ email = "opensource@ronnypfannschmidt.de"
 
 [project.optional-dependencies]
 docs = [
-    "requests",
-    "selenium",
-    "sphinx",
+  "requests",
+  "selenium",
+  "sphinx",
 ]
 examples = [
-    "selenium",
+  "selenium",
 ]
 test = [
-    "pytest",
+  "pytest",
 ]
 
 [tool.hatch.version]
@@ -54,17 +59,13 @@ source = "vcs"
 [project.urls]
 Homepage = "https://github.com/Redhatqe/Sentaku"
 
-
 [tool.hatch.envs.test]
 features = ["test"]
 [[tool.hatch.envs.test.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11"]
 
-
-
 [tool.hatch.envs.test.scripts]
 test = "pytest {args}"
-
 
 [tool.hatch.envs.docs]
 features = ["docs"]
@@ -75,9 +76,14 @@ build = """sphinx-build -b html \
            docs build/htmldocs {args}
           """
 
-
-
-
+[tool.hatch.envs.mypy]
+features = ["test"]
+dependencies = [
+    "mypy==0.991",
+    "types-requests",
+]
+[tool.hatch.envs.mypy.scripts]
+check = "mypy {args:src/sentaku testing examples}"
 
 [tool.pytest.ini_options]
 testpaths = ["./testing"]
@@ -85,3 +91,8 @@ pythonpath = ["./examples"]
 
 [tool.mypy]
 python_version="3.8"
+mypy_path = ["$MYPY_CONFIG_FILE_DIR/src", "$MYPY_CONFIG_FILE_DIR/examples"]
+
+[[tool.mypy.overrides]]
+module = ["dectate", "selenium.*"]
+ignore_missing_imports=true
