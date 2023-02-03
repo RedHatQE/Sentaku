@@ -1,3 +1,14 @@
+v0.8.0
+=======
+
+* migrate to hatch
+
+  * drop tox
+  * drop setuptools
+
+* add type annotations
+
+
 v0.7.2
 =======
 
