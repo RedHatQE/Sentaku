@@ -1,19 +1,26 @@
-import attr
+from __future__ import annotations
+
+from typing import Any
+
+import attrs
+from . import context as ic
 
 
 class ElementMixin:
+    parent: ElementMixin | ic.ImplementationContext
+
     @property
-    def context(self):
+    def context(self) -> ic.ImplementationContext:
         """the context this element belongs to"""
         return self.parent.context
 
     @property
-    def impl(self):
+    def impl(self) -> Any:
         """shortcut to get the currently active application implementation"""
         return self.context.impl
 
 
-@attr.s
+@attrs.define(slots=False)
 class Element(ElementMixin):
     """Base class for all application elements
 
@@ -23,10 +30,10 @@ class Element(ElementMixin):
     :type parent: :py:class:`Element` or :py:class:`ImplementationContext`
     """
 
-    parent = attr.ib(repr=False)
+    parent: Element | ic.ImplementationContext = attrs.field(repr=False)
 
 
-@attr.s
+@attrs.define(slots=False)
 class Collection(Element):
     """base class for collections in the application
 

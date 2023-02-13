@@ -1,83 +1,102 @@
 from __future__ import annotations
 import contextlib
-from typing import overload
-
+from typing import overload, cast, Callable, Generic, Any, Protocol, Iterator, Sequence
+from typing import TypeVar
+from typing_extensions import Self
 import attr
 import dectate
 from collections import defaultdict
-from .chooser import ChooserStack
+from .chooser import ChooserStack, ImplementationChoice
+
+
+class HasContext(Protocol):
+    @property
+    def context(self) -> ImplementationContext:
+        ...
+
 
 METHOD_DATA_KEY = "sentaku_method_data"
 
+F = TypeVar("F")
+T = TypeVar("T")
+
 
 @contextlib.contextmanager
-def _use_maybe_strict(ctx, impl):
-    with ctx.use(impl, frozen=ctx.strict_calls) as impl:
-        yield impl
+def _use_maybe_strict(ctx: ImplementationContext, implt: object) -> Iterator[None]:
+    with ctx.use(implt, frozen=ctx.strict_calls):
+        yield
 
 
 @attr.s
-class ImplementationRegistrationAction(dectate.Action):
+class ImplementationRegistrationAction(dectate.Action):  # type: ignore[misc]
     config = {"methods": lambda: defaultdict(dict)}  # type: ignore[var-annotated]
-    method = attr.ib()
-    implementation = attr.ib()
+    method: object = attr.ib()
+    implementation: object = attr.ib()
 
-    def identifier(self, methods):
+    def identifier(self, methods: Any) -> tuple[object, object]:
         return self.method, self.implementation
 
-    def perform(self, obj, methods):
+    def perform(self, obj: object, methods: dict[object, dict[object, object]]) -> None:
         methods[self.method][self.implementation] = obj
 
 
 @attr.s(hash=False)
-class ImplementationContext(dectate.App):
+class ImplementationContext(dectate.App):  # type: ignore[misc]
     """maintains a mapping
     of :ref:`implementation-identification` to implementations,
-    as well as the list of currently availiable Implementations
+    as well as the list of currently available Implementations
     in the order of precedence.
 
     :type implementations: `collections.Mapping`
     :param implementations:
-        the implementations availiable in the context
+        the implementations available in the context
 
         a mapping of :ref:`implementation-identification` to implementation
-    :param default_choices:
-        the implementations that should be used by default
-        in order of percedence
-    :type default_choices: optional list
+
     """
 
-    implementations = attr.ib()
-    implementation_chooser = attr.ib(
+    implementations: dict[object, object] = attr.ib()
+    implementation_chooser: ChooserStack = attr.ib(
         default=attr.Factory(ChooserStack), converter=ChooserStack
     )
-    strict_calls = attr.ib(default=False)
+    strict_calls: bool = attr.ib(default=False)
 
-    external_for = dectate.directive(ImplementationRegistrationAction)
+    _external_for_directive = dectate.directive(ImplementationRegistrationAction)
 
     @classmethod
-    def with_default_choices(cls, implementations, default_choices, **kw):
+    def external_for(cls, method: object, implementation: object) -> Callable[[F], F]:
+        return cast(
+            Callable[[F], F], cls._external_for_directive(method, implementation)
+        )
+
+    @classmethod
+    def with_default_choices(
+        cls,
+        implementations: dict[object, object],
+        default_choices: Sequence[object],
+        **kw: Any,
+    ) -> Self:
         return cls(
             implementations=implementations,
-            implementation_chooser=default_choices,
+            implementation_chooser=ChooserStack(default_choices),
             **kw,
         )
 
     @property
-    def impl(self):
+    def impl(self) -> Any:
         """the currently active implementation"""
         return self.implementation_chooser.choose(self.implementations).value
 
-    def _get_implementation_for(self, key):
+    def _get_implementation_for(self, key: object) -> ImplementationChoice:
         self.commit()
         implementation_set = self.config.methods[key]
         return self.implementation_chooser.choose(implementation_set)
 
     @classmethod
-    def from_instances(cls, instances, **kw):
+    def from_instances(cls, instances: Sequence[object], **kw: Any) -> Self:
         """utility to create the context
 
-        by passing a ordered list of instances
+        by passing an ordered list of instances
         and turning them into implementations and the default choices
         """
         return cls.with_default_choices(
@@ -87,47 +106,42 @@ class ImplementationContext(dectate.App):
         )
 
     @property
-    def context(self):
+    def context(self) -> Self:
         """alias for consistence with elements"""
         return self
 
     root = context
 
     @contextlib.contextmanager
-    def use(self, *implementation_types, **kw):
+    def use(self, *implementation_types: object, frozen: bool = False) -> Iterator[Any]:
         """contextmanager for controlling
         the currently active/usable implementations and
-        their order of percedence
+        their order of precedence
 
-        :param `implementation-identification` implementation_types:
-            the implementations availiable within the context
-        :keyword bool frozen: if True prevent further nesting
+        :param implementation_types:
+            the implementations available within the context
+        :param bool frozen: if True prevent further nesting
         """
 
-        def _get_frozen(frozen=False):
-            return frozen
-
-        with self.implementation_chooser.pushed(
-            implementation_types, frozen=_get_frozen(**kw)
-        ):
+        with self.implementation_chooser.pushed(implementation_types, frozen=frozen):
             yield self.impl
 
 
 @attr.s
 class _ImplementationBindingMethod:
-    """bound method equivalent for :class:`ImplementationCooser`
+    """bound method equivalent for  :class:`ImplementationCooser`
 
-    on call it:
+    when called it
 
     * looks up the implementation
     * freezes the context
     * calls the actual implementation
     """
 
-    instance = attr.ib()
-    selector = attr.ib()
+    instance: HasContext = attr.ib()
+    selector: object = attr.ib()
 
-    def __call__(self, *k, **kw):
+    def __call__(self, *k: Any, **kw: Any) -> Any:
         ctx = self.instance.context
         choice, implementation = ctx._get_implementation_for(self.selector)
         bound_method = implementation.__get__(self.instance, type(self.instance))
@@ -137,7 +151,7 @@ class _ImplementationBindingMethod:
 
 class ContextualMethod:
     """
-    descriptor for implementing context sensitive methods
+    descriptor for implementing context-sensitive methods
     and registration of their implementations
 
 
@@ -154,51 +168,54 @@ class ContextualMethod:
                pass
     """
 
-    # todo - turn into attrs class once attribute ancoring is implemented
-    def __repr__(self):
+    # todo - turn into attrs class once attribute anchoring is implemented
+    def __repr__(self) -> str:
         return "<ContextualMethod>"
 
-    def external_implementation_for(self, implementation):
-        return ImplementationContext.external_for(self, implementation)
-
     @overload
-    def __get__(self, instance: None, owner: object) -> ContextualMethod:
+    def __get__(self, instance: None, owner: type[HasContext]) -> ContextualMethod:
         ...
 
     @overload
-    def __get__(self, instance: object, owner: object) -> _ImplementationBindingMethod:
+    def __get__(
+        self, instance: HasContext, owner: type[HasContext]
+    ) -> _ImplementationBindingMethod:
         ...
 
     def __get__(
-        self, instance: object, owner: object
+        self, instance: HasContext | None, owner: type[HasContext]
     ) -> ContextualMethod | _ImplementationBindingMethod:
         if instance is None:
             return self
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty:
-    # todo - turn into attrs class once attribute ancoring is implemented
-    def __init__(self):
+class ContextualProperty(Generic[T]):
+    # todo - turn into attrs class once attribute anchoring is implemented
+    def __init__(self) -> None:
         # setter and getter currently are lookup keys
         self.setter = self, "set"
         self.getter = self, "get"
 
-    def external_setter_implemented_for(self, implementation):
-        return ImplementationContext.external_for(self.setter, implementation)
-
-    def external_getter_implemented_for(self, implementation):
-        return ImplementationContext.external_for(self.getter, implementation)
-
-    def __set__(self, instance, value):
+    def __set__(self, instance: HasContext, value: T) -> None:
         ctx = instance.context
         choice, implementation = ctx._get_implementation_for(self.setter)
 
         bound_method = implementation.__get__(instance, type(instance))
         with _use_maybe_strict(ctx, choice):
-            return bound_method(value)
+            bound_method(value)
 
-    def __get__(self, instance, owner):
+    @overload
+    def __get__(self, instance: None, owner: type[object]) -> ContextualProperty[T]:
+        ...
+
+    @overload
+    def __get__(self, instance: HasContext, owner: type[HasContext]) -> T:
+        ...
+
+    def __get__(
+        self, instance: HasContext | None, owner: type[HasContext] | type[object]
+    ) -> T | ContextualProperty[T]:
         if instance is None:
             return self
 
@@ -207,4 +224,4 @@ class ContextualProperty:
 
         bound_method = implementation.__get__(instance, type(instance))
         with _use_maybe_strict(ctx, choice):
-            return bound_method()
+            return cast(T, bound_method())

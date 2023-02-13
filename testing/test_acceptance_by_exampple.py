@@ -3,13 +3,14 @@ import pytest
 from todo_example import spec, api as todo_api
 
 
-@pytest.fixture
-def api():
-    return spec.TodoAPI.from_api(todo_api.TodoApp())
+@pytest.fixture()
+def api() -> spec.TodoAPI:
+    # dectate must go
+    return spec.TodoAPI.from_api(todo_api.TodoApp())  # type: ignore[no-any-return]
 
 
 @pytest.mark.parametrize("impl", [spec.ViaAPI, spec.ViaUX, spec.ViaRPC])
-def test_simple(api: spec.TodoAPI, impl):
+def test_simple(api: spec.TodoAPI, impl: object) -> None:
     with api.use(impl):
         assert api.implementation_chooser.current.elements == (impl,)
         collection = api.create_collection(name="test")

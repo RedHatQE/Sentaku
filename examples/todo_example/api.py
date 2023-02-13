@@ -1,4 +1,14 @@
+from __future__ import annotations
+from typing import Protocol, Iterator, Any, TypeVar, Callable
+
+
 import attr
+
+T = TypeVar("T")
+
+
+class HasName(Protocol):
+    name: str
 
 
 @attr.s
@@ -7,24 +17,28 @@ class TodoElement:
     Element of a todo list
     """
 
-    name = attr.ib()
-    completed = attr.ib(default=False)
+    name: str = attr.ib()
+    completed: bool = attr.ib(default=False)
 
 
-def get_by(self, name):
+def get_by(self: Iterator[HasName], name: str) -> HasName | None:
     """get element by name"""
-    return next((item for item in self if item.name == name), None)
+    for item in self:
+        if item.name == name:
+            return item
+    else:
+        return None
 
 
-def create_by_name(cls, collection_name):
-    def create_item(self, name):
-        "create a new named %r item"
+def create_by_name(cls: type[T], collection_name: str) -> Callable[[Any, str], T]:
+    def create_item(self: Any, name: str) -> T:
         assert self.get_by(name) is None
-        item = cls(name=name)
+        item = cls(name=name)  # type: ignore  [call-arg]
         getattr(self, collection_name).append(item)
         return item
 
-    create_item.__doc__ %= cls
+    create_item.__doc__ = f"create a new named {cls} item"
+
     return create_item
 
 
@@ -32,16 +46,16 @@ def create_by_name(cls, collection_name):
 class TodoList:
     """a named todolist"""
 
-    name = attr.ib()
-    items = attr.ib(default=attr.Factory(list), converter=list)
+    name: str = attr.ib()
+    items: list[TodoElement] = attr.ib(default=attr.Factory(list), converter=list)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[TodoElement]:
         return iter(self.items)
 
     get_by = get_by
     create_item = create_by_name(TodoElement, "items")
 
-    def clear_completed(self):
+    def clear_completed(self) -> None:
         """
         removes completed elements
         """
@@ -55,13 +69,13 @@ class TodoApp:
 
     """
 
-    collections = attr.ib(default=attr.Factory(list), converter=list)
+    collections: list[TodoList] = attr.ib(default=attr.Factory(list), converter=list)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[TodoList]:
         return iter(self.collections)
 
-    def __repr__(self):
-        return f"<TodoApp {sorted(x.name for x in self.collections)!r}>"
+    def __repr__(self) -> str:
+        return f"<TodoApp {sorted(x.name for x in self)!r}>"
 
     get_by = get_by
     create_item = create_by_name(TodoList, "collections")

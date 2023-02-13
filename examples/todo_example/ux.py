@@ -1,12 +1,16 @@
+from __future__ import annotations
+from typing import Any, cast
+
+
 class TodoUX:
     """
-    example root UX fore todo lists
+    example root UX for todo lists
     """
 
-    def __init__(self, app):
+    def __init__(self, app: Any) -> None:
         self.app = app
 
-    def get_by(self, name):
+    def get_by(self, name: str) -> TodoListUX:
         """get a todo list ux by name
 
         :rtype: TodoListUX
@@ -14,7 +18,7 @@ class TodoUX:
         item = self.app.get_by(name)
         return TodoListUX(ux=self, controlled_list=item)
 
-    def create_item(self, name):
+    def create_item(self, name: str) -> TodoListUX:
         """create a new named todo list
 
         :rtype: TodoListUX
@@ -37,27 +41,28 @@ class TodoListUX:
 
     """
 
-    def __init__(self, ux, controlled_list):
+    def __init__(self, ux: TodoUX, controlled_list: Any):
         self.ux = ux
         self.controlled_list = controlled_list
 
-    def get_by(self, name):
+    def get_by(self, name: str) -> TodoElementUX | None:
         """
         find a todo list element by name
         """
         item = self.controlled_list.get_by(name)
         if item:
             return TodoElementUX(parent=self, controlled_element=item)
+        else:
+            return None
 
-    def create_item(self, name):
+    def create_item(self, name: str) -> TodoElementUX:
         """
         create a new todo list item
         """
         elem = self.controlled_list.create_item(name)
-        if elem:
-            return TodoElementUX(parent=self, controlled_element=elem)
+        return TodoElementUX(parent=self, controlled_element=elem)
 
-    def clear_completed(self):
+    def clear_completed(self) -> None:
         """
         remove all completed elements
         """
@@ -78,17 +83,17 @@ class TodoElementUX:
 
     """
 
-    def __init__(self, parent, controlled_element):
+    def __init__(self, parent: TodoListUX, controlled_element: Any):
         self.parent = parent
         self.controlled_element = controlled_element
 
     @property
-    def completed(self):
+    def completed(self) -> bool:
         """
         completion state of the controlled element
         """
-        return self.controlled_element.completed
+        return cast(bool, self.controlled_element.completed)
 
     @completed.setter
-    def completed(self, value):
+    def completed(self, value: bool) -> None:
         self.controlled_element.completed = value

@@ -31,9 +31,9 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-  "attrs>=19",
+  "attrs>=22",
   "dectate>=0.12",
-  "typing-extensions",
+  "typing-extensions>=4.3",
 ]
 
 [[project.authors]]
@@ -50,7 +50,7 @@ examples = [
   "selenium",
 ]
 test = [
-  "pytest",
+  "pytest>7.1",
 ]
 
 [tool.hatch.version]
@@ -81,6 +81,7 @@ features = ["test"]
 dependencies = [
     "mypy==0.991",
     "types-requests",
+    "pytest",
 ]
 [tool.hatch.envs.mypy.scripts]
 check = "mypy {args:src/sentaku testing examples}"
@@ -91,8 +92,14 @@ pythonpath = ["./examples"]
 
 [tool.mypy]
 python_version="3.8"
+strict = true
 mypy_path = ["$MYPY_CONFIG_FILE_DIR/src", "$MYPY_CONFIG_FILE_DIR/examples"]
 
 [[tool.mypy.overrides]]
 module = ["dectate", "selenium.*"]
 ignore_missing_imports=true
+
+
+[tool.pyright]
+include = ["src","examples", "testing"]
+pythonVersion = "3.8"

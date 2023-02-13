@@ -3,37 +3,40 @@
     utility classes for implementation lookup
 """
 from __future__ import annotations
-import attr
+
+from typing import Any, Iterator
+
+import attrs
 
 from collections.abc import Mapping
 
 
-@attr.s(frozen=True)
+@attrs.frozen
 class ImplementationName:
     """
     utility class to declare names for implementations
     """
 
-    name = attr.ib()
-    documentation = attr.ib(repr=False, default=None)
+    name: str
+    documentation: str | None = attrs.field(repr=False, default=None)
 
 
-@attr.s
-class AttributeBasedImplementations(Mapping):
-    holder = attr.ib()
-    attribute_mapping: dict[str, object] = attr.ib(
-        validator=attr.validators.instance_of(dict)
+@attrs.define
+class AttributeBasedImplementations(Mapping[str, object]):
+    holder: object
+    attribute_mapping: dict[str, str] = attrs.field(
+        validator=attrs.validators.instance_of(dict)
     )
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         attribute_name = self.attribute_mapping[key]
         try:
             return getattr(self.holder, attribute_name)
         except AttributeError:
             raise LookupError(f"{self.holder!r} has no attribute {attribute_name}")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self.attribute_mapping)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.attribute_mapping)
