@@ -35,7 +35,7 @@ class TodoItem(sentaku.Element):
 
     parent: TodoCollection
     name: str = attr.ib()
-    completed = sentaku.ContextualProperty[bool]()
+    completed = sentaku.ContextualProperty()
 
 
 @TodoAPI.external_for(TodoAPI.create_collection, ViaAPI)

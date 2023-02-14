@@ -20,7 +20,7 @@ class LocalContext(ImplementationContext):
 
 class LocalElement(Element):
     method = ContextualMethod()
-    prop = ContextualProperty[int]()
+    prop = ContextualProperty()
 
 
 @LocalContext.external_for(LocalElement.method, int)

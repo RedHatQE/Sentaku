@@ -1,8 +1,7 @@
 from __future__ import annotations
 import contextlib
-from typing import overload, cast, Callable, Generic, Any, Protocol, Iterator, Sequence
-from typing import TypeVar
-from typing_extensions import Self
+from typing import overload, cast, Callable, Any, Protocol, Iterator, Sequence
+from typing_extensions import Self, TypeVar
 import attr
 import dectate
 from collections import defaultdict
@@ -190,7 +189,7 @@ class ContextualMethod:
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty(Generic[T]):
+class ContextualProperty:
     # todo - turn into attrs class once attribute anchoring is implemented
     def __init__(self) -> None:
         # setter and getter currently are lookup keys
@@ -206,16 +205,16 @@ class ContextualProperty(Generic[T]):
             bound_method(value)
 
     @overload
-    def __get__(self, instance: None, owner: type[object]) -> ContextualProperty[T]:
+    def __get__(self, instance: None, owner: type[object]) -> Self:
         ...
 
     @overload
-    def __get__(self, instance: HasContext, owner: type[HasContext]) -> T:
+    def __get__(self, instance: HasContext, owner: type[HasContext]) -> Any:
         ...
 
     def __get__(
         self, instance: HasContext | None, owner: type[HasContext] | type[object]
-    ) -> T | ContextualProperty[T]:
+    ) -> T | Self:
         if instance is None:
             return self
 
