@@ -4,11 +4,9 @@
 """
 from __future__ import annotations
 
-from typing import Any, Iterator
+from typing import Any, Iterator, Mapping
 
 import attrs
-
-from collections.abc import Mapping
 
 
 @attrs.frozen
