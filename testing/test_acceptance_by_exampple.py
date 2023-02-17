@@ -1,15 +1,16 @@
 import pytest
 
-from todo_example import spec, api as todo_api
+from todo_example import spec, api as todo_api, ux as todo_ux, pseudorpc
 
 
 @pytest.fixture()
 def api() -> spec.TodoAPI:
-    # dectate must go
-    return spec.TodoAPI.from_api(todo_api.TodoApp())  # type: ignore[no-any-return]
+    return spec.TodoAPI.from_api(todo_api.TodoApp())
 
 
-@pytest.mark.parametrize("impl", [spec.ViaAPI, spec.ViaUX, spec.ViaRPC])
+@pytest.mark.parametrize(
+    "impl", [todo_api.TodoApp, todo_ux.TodoUX, pseudorpc.PseudoRpc]
+)
 def test_simple(api: spec.TodoAPI, impl: object) -> None:
     with api.use(impl):
         assert api.implementation_chooser.current.elements == (impl,)

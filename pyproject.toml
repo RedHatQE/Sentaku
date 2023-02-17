@@ -75,12 +75,12 @@ build = """
     sphinx-build -b html \
         -d build/sphinx-doctrees \
         docs build/htmldocs {args}
-    """
+"""
 
 [tool.hatch.envs.mypy]
 features = ["test"]
 dependencies = [
-    "mypy==0.991",
+    "mypy==1.0.0",
     "types-requests",
     "pytest",
 ]

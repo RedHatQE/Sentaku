@@ -2,11 +2,9 @@
 a hideous rpc interface used to demonstrate partial implementation
 """
 from __future__ import annotations
+import attr
 
 from typing import Any
-
-import attr
-from . import spec
 
 
 @attr.s
@@ -34,36 +32,3 @@ class PseudoRpc:
     def clear_completed(self, collection: str) -> None:
         """clears the completed elements of a todo list"""
         self._backend.get_by(collection).clear_completed()
-
-
-@spec.TodoAPI.external_for(spec.TodoItem.completed.setter, spec.ViaRPC)
-def todo_item_set_item_completion(item: spec.TodoItem, value: bool) -> None:
-    if value:
-        item.impl.complete_item(item.parent.name, item.name)
-    else:
-        raise NotImplementedError("rpc cant undo completion")
-
-
-@spec.TodoAPI.external_for(spec.TodoCollection.create_item, spec.ViaRPC)
-def create_todo_item(coll: spec.TodoCollection, name: str) -> spec.TodoItem:
-    coll.impl.make_item(coll.name, name)
-    return spec.TodoItem(coll, name=name)
-
-
-@spec.TodoAPI.external_for(spec.TodoCollection.get_by, spec.ViaRPC)
-def get_by(self: spec.TodoCollection, name: str) -> spec.TodoItem | None:
-    if self.impl.has_item(self.name, name):
-        return spec.TodoItem(self, name=name)
-    else:
-        return None
-
-
-@spec.TodoAPI.external_for(spec.TodoCollection.clear_completed, spec.ViaRPC)
-def clear_completed(coll: spec.TodoCollection) -> None:
-    coll.impl.clear_completed(coll.name)
-
-
-@spec.TodoAPI.external_for(spec.TodoAPI.create_collection, spec.ViaRPC)
-def create_collection(api: spec.TodoAPI, name: str) -> spec.TodoCollection:
-    api.impl.make_collection(name)
-    return spec.TodoCollection(api, name=name)
