@@ -4,14 +4,14 @@ from typing import Any
 
 import attrs
 
-from . import context as ic
+from . import context as _ic
 
 
 class ElementMixin:
-    parent: ElementMixin | ic.ImplementationContext
+    parent: ElementMixin | _ic.HasContext
 
     @property
-    def context(self) -> ic.ImplementationContext:
+    def context(self) -> _ic.ImplementationContext:
         """the context this element belongs to"""
         return self.parent.context
 
@@ -31,7 +31,7 @@ class Element(ElementMixin):
     :type parent: :py:class:`Element` or :py:class:`ImplementationContext`
     """
 
-    parent: Element | ic.ImplementationContext = attrs.field(repr=False)
+    parent: Element | _ic.HasContext = attrs.field(repr=False)
 
 
 @attrs.define(slots=False)

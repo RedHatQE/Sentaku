@@ -68,6 +68,12 @@ class ImplementationContext:
 
     @classmethod
     def external_for(cls, method: object, implementation: object) -> Callable[[F], F]:
+        if isinstance(method, ContextualProperty):
+            raise TypeError(
+                f"{method} cannot be registered, "
+                "use its .getter/setter attributes for registration"
+            )
+
         def register(func: F) -> F:
             if method in cls.__registrations:
                 registry = cls.__registrations[method]
