@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from typing import cast
-
-from sentaku.context import ImplementationContext, ContextualProperty, ContextualMethod
-from sentaku import Element
+from typing import Union
 
 import pytest
+
+from sentaku import Element
+from sentaku.context import ContextualMethod
+from sentaku.context import ContextualProperty
+from sentaku.context import ImplementationContext
 
 
 def test_from_instances() -> None:
@@ -20,7 +23,7 @@ class LocalContext(ImplementationContext):
 
 class LocalElement(Element):
     method = ContextualMethod()
-    prop = ContextualProperty()
+    prop = ContextualProperty[Union[int, str]]()
 
 
 @LocalContext.external_for(LocalElement.method, int)
@@ -29,10 +32,11 @@ class LocalElement(Element):
 @LocalContext.external_for(LocalElement.prop.setter, str)
 @LocalContext.external_for(LocalElement.prop.getter, int)
 @LocalContext.external_for(LocalElement.prop.getter, str)
-def method_standin(self: LocalElement, value: int | str | None = None) -> None:
+def method_standin(self: LocalElement, value: int | str | None = None) -> int:
     assert (
         self.context.implementation_chooser.current.frozen == self.context.strict_calls
     )
+    return 1
 
 
 @pytest.fixture(
@@ -57,12 +61,18 @@ def impl(request: pytest.FixtureRequest) -> type:
 
 def test_property(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
     with ctx.use(impl):
-        elem.prop
+        assert elem.prop == 1
 
 
 def test_set_property(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
     with ctx.use(impl):
         elem.prop = 1
+        assert elem.prop == 1
+
+
+def test_register_prop_fails() -> None:
+    with pytest.raises(TypeError):
+        LocalContext.external_for(LocalElement.prop, int)
 
 
 def test_method(ctx: LocalContext, elem: LocalElement, impl: type) -> None:

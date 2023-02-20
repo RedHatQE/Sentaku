@@ -1,4 +1,5 @@
 import pytest
+
 from sentaku.chooser import ChooserStack
 
 

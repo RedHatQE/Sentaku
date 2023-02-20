@@ -13,11 +13,12 @@ import argparse
 import contextlib
 from typing import cast
 
-import sentaku
-import requests
 import attr
+import requests
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+import sentaku
 
 parser = argparse.ArgumentParser()
 parser.add_argument("query")
@@ -95,7 +96,6 @@ def main(search: Search, query: str) -> None:
 
 def cli_main(args: list[str] | None = None) -> None:
     """cli entrypoitns, sets up everything needed"""
-    SearchContext.commit()
     config = parser.parse_args(args, NS())
     # open up a browser
     firefox_remote = Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.FIREFOX)

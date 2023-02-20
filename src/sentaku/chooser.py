@@ -6,9 +6,17 @@ based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
 from __future__ import annotations
+
 from contextlib import contextmanager
+from typing import Any
+from typing import Iterator
+from typing import Mapping
+from typing import NamedTuple
+from typing import NoReturn
+from typing import Sequence
+from typing import Union
+
 from typing_extensions import TypeAlias
-from typing import Union, NamedTuple, Any, Sequence, Iterator, NoReturn
 
 LIMIT = 20
 
@@ -36,7 +44,7 @@ class Chooser(NamedTuple):
 
         return cls(elements, previous, frozen)
 
-    def choose(self, choose_from: dict[object, Any]) -> ImplementationChoice:
+    def choose(self, choose_from: Mapping[object, Any]) -> ImplementationChoice:
         """given a mapping of implementations
         choose one based on the current settings
         returns a key value pair
@@ -45,7 +53,7 @@ class Chooser(NamedTuple):
         for choice in self.elements:
             if choice in choose_from:
                 return ImplementationChoice(choice, choose_from[choice])
-        raise LookupError(self.elements, choose_from.keys())
+        raise LookupError(self.elements, set(choose_from.keys()))
 
 
 class NullChooser:
@@ -91,7 +99,7 @@ class ChooserStack:
     def __repr__(self) -> str:
         return f"<ICS {chain(self.current)}>"
 
-    def choose(self, choose_from: dict[object, Any]) -> ImplementationChoice:
+    def choose(self, choose_from: Mapping[object, Any]) -> ImplementationChoice:
         """given a mapping of implementations
         choose one based on the current settings
         returns a key value pair

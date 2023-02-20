@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
   "attrs>=22",
   "dectate>=0.12",
-  "typing-extensions>=4.3",
+  "typing-extensions>=4.5",
 ]
 
 [[project.authors]]
@@ -62,7 +62,7 @@ Homepage = "https://github.com/Redhatqe/Sentaku"
 [tool.hatch.envs.test]
 features = ["test"]
 [[tool.hatch.envs.test.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.test.scripts]
 test = "pytest {args}"
@@ -75,12 +75,12 @@ build = """
     sphinx-build -b html \
         -d build/sphinx-doctrees \
         docs build/htmldocs {args}
-    """
+"""
 
 [tool.hatch.envs.mypy]
 features = ["test"]
 dependencies = [
-    "mypy==0.991",
+    "mypy==1.0.0",
     "types-requests",
     "pytest",
 ]
@@ -97,7 +97,7 @@ strict = true
 mypy_path = ["$MYPY_CONFIG_FILE_DIR/src", "$MYPY_CONFIG_FILE_DIR/examples"]
 
 [[tool.mypy.overrides]]
-module = ["dectate", "selenium.*"]
+module = ["selenium.*"]
 ignore_missing_imports=true
 
 
