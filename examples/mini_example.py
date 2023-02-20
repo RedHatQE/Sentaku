@@ -13,11 +13,12 @@ import argparse
 import contextlib
 from typing import cast
 
-import sentaku
-import requests
 import attr
+import requests
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+import sentaku
 
 parser = argparse.ArgumentParser()
 parser.add_argument("query")

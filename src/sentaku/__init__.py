@@ -1,5 +1,8 @@
-from .modeling import Element, Collection
-from .context import ContextualMethod, ContextualProperty, ImplementationContext
+from .context import ContextualMethod
+from .context import ContextualProperty
+from .context import ImplementationContext
+from .modeling import Collection
+from .modeling import Element
 
 
 __all__ = [

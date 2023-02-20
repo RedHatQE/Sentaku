@@ -6,9 +6,17 @@ based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
 from __future__ import annotations
+
 from contextlib import contextmanager
+from typing import Any
+from typing import Iterator
+from typing import Mapping
+from typing import NamedTuple
+from typing import NoReturn
+from typing import Sequence
+from typing import Union
+
 from typing_extensions import TypeAlias
-from typing import Union, NamedTuple, Any, Sequence, Iterator, NoReturn, Mapping
 
 LIMIT = 20
 

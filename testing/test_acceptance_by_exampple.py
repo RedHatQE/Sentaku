@@ -1,6 +1,9 @@
 import pytest
 
-from todo_example import spec, api as todo_api, ux as todo_ux, pseudorpc
+from todo_example import api as todo_api
+from todo_example import pseudorpc
+from todo_example import spec
+from todo_example import ux as todo_ux
 
 
 @pytest.fixture()

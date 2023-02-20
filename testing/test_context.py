@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from typing import cast
-
-from sentaku.context import ImplementationContext, ContextualProperty, ContextualMethod
-from sentaku import Element
+from typing import Union
 
 import pytest
+
+from sentaku import Element
+from sentaku.context import ContextualMethod
+from sentaku.context import ContextualProperty
+from sentaku.context import ImplementationContext
 
 
 def test_from_instances() -> None:
@@ -20,7 +23,7 @@ class LocalContext(ImplementationContext):
 
 class LocalElement(Element):
     method = ContextualMethod()
-    prop = ContextualProperty()
+    prop = ContextualProperty[Union[int, str]]()
 
 
 @LocalContext.external_for(LocalElement.method, int)

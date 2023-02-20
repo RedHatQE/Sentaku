@@ -1,19 +1,24 @@
 from __future__ import annotations
+
 import contextlib
-from typing import (
-    overload,
-    Callable,
-    Any,
-    Protocol,
-    Iterator,
-    Sequence,
-    Mapping,
-    ClassVar,
-    cast,
-)
-from typing_extensions import Self, TypeVar
+import warnings
+from typing import Callable
+from typing import cast
+from typing import ClassVar
+from typing import Generic
+from typing import Iterator
+from typing import Mapping
+from typing import overload
+from typing import Protocol
+from typing import Sequence
+
 import attr
-from .chooser import ChooserStack, ImplementationChoice
+from typing_extensions import Any
+from typing_extensions import Self
+from typing_extensions import TypeVar
+
+from .chooser import ChooserStack
+from .chooser import ImplementationChoice
 
 
 class HasContext(Protocol):
@@ -214,14 +219,19 @@ class ContextualMethod:
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty:
-    def getter(self, func: Any) -> Any:
-        # noop for now
-        return func
+class ContextualProperty(Generic[T]):
+    name: str
 
-    def setter(self, func: Any) -> Any:
-        # noop for now
-        return func
+    def __set_name__(self, owner: object, name: str) -> None:
+        self.name = name
+
+    def getter(self, func: Callable[[object], T]) -> Self:
+        warnings.warn(f"{self.getter} is not yet registering {func}")
+        return self
+
+    def setter(self, func: Callable[[object, T], None]) -> Self:
+        warnings.warn(f"{self.setter} is not yet registering {func}")
+        return self
 
     def __set__(self, instance: HasContext, value: T) -> None:
         ctx = instance.context

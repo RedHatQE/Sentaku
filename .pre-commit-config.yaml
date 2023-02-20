@@ -1,34 +1,45 @@
+---
 repos:
--   repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-    - id: black
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: debug-statements
--   repo: https://github.com/pycqa/flake8
-    rev: '6.0.0'
-    hooks:
-    - id: flake8
-      args: [--max-line-length=88]
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    - id: pyupgrade
-      args: [--py38-plus]
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.0.0'
-    hooks:
-    - id: mypy
-      additional_dependencies:
-      - types-requests
-      - attrs
-      - pytest
-- repo: https://github.com/tox-dev/pyproject-fmt
-  rev: "0.8.0"
-  hooks:
-    - id: pyproject-fmt
+    - repo: https://github.com/asottile/reorder_python_imports
+      rev: v3.9.0
+      hooks:
+          - id: reorder-python-imports
+            args: [--application-directories=.:examples:src, --py38-plus]
+    - repo: https://github.com/psf/black
+      rev: 23.1.0
+      hooks:
+          - id: black
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+          - id: debug-statements
+    - repo: https://github.com/pycqa/flake8
+      rev: 6.0.0
+      hooks:
+          - id: flake8
+            args: [--max-line-length=88]
+    - repo: https://github.com/asottile/pyupgrade
+      rev: v3.3.1
+      hooks:
+          - id: pyupgrade
+            args: [--py38-plus]
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.1 # or other specific tag
+      hooks:
+          - id: yamlfmt
+    - repo: https://github.com/pre-commit/mirrors-mypy
+      rev: v1.0.0
+      hooks:
+          - id: mypy
+            additional_dependencies:
+                - types-requests
+                - attrs
+                - pytest
+                - typing_extensions>=4.5
+    - repo: https://github.com/tox-dev/pyproject-fmt
+      rev: 0.8.0
+      hooks:
+          - id: pyproject-fmt

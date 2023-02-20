@@ -2,9 +2,10 @@
 a hideous rpc interface used to demonstrate partial implementation
 """
 from __future__ import annotations
-import attr
 
 from typing import Any
+
+import attr
 
 
 @attr.s

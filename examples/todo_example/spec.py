@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-
 import attr
+
 import sentaku
-from .ux import TodoUX
-from .pseudorpc import PseudoRpc
 from .api import TodoApp
+from .pseudorpc import PseudoRpc
+from .ux import TodoUX
 
 
 class TodoAPI(sentaku.ImplementationContext):
@@ -32,7 +32,7 @@ class TodoItem(sentaku.Element):
 
     parent: TodoCollection
     name: str
-    completed = sentaku.ContextualProperty()
+    completed = sentaku.ContextualProperty[bool]()
 
 
 @TodoAPI.external_for(TodoAPI.create_collection, TodoApp)
