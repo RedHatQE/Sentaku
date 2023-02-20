@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import warnings
+from typing import Any
 from typing import Callable
 from typing import cast
 from typing import ClassVar
@@ -11,11 +12,10 @@ from typing import Mapping
 from typing import overload
 from typing import Protocol
 from typing import Sequence
+from typing import TypeVar
 
 import attr
-from typing_extensions import Any
 from typing_extensions import Self
-from typing_extensions import TypeVar
 
 from .chooser import ChooserStack
 from .chooser import ImplementationChoice

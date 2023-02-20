@@ -1,3 +1,11 @@
+v0.9.0
+======
+
+* drop dectate, registration is implemented locally again
+* fix #18: error out when incorrectly registering contextual properties
+* add generics to contextual property
+
+
 v0.8.0
 =======
 
