@@ -78,3 +78,28 @@ def test_register_prop_fails() -> None:
 def test_method(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
     with ctx.use(impl):
         elem.method()
+
+
+def test_delayed_register_method(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
+    with ctx.use(impl):
+        # Call a registered contextual method
+        elem.method()
+
+        # Register a new contextual method
+        class NewLocalElement(LocalElement):
+            new_method = ContextualMethod()
+
+        @LocalContext.external_for(NewLocalElement.new_method, int)
+        @LocalContext.external_for(NewLocalElement.new_method, str)
+        def new_method_standin(self: NewLocalElement, value: int | str | None = None) -> int:
+            assert (
+                self.context.implementation_chooser.current.frozen == self.context.strict_calls
+            )
+            return 1
+
+        # Call both registered methods
+        new_elem = NewLocalElement(parent=ctx)
+        new_elem.method()
+        new_elem.new_method()
+        elem.method()
+
