@@ -1,3 +1,8 @@
+v0.9.1
+=======
+
+* fix #30 - work around delayed registration triggering failures
+
 v0.9.0
 ======
 
