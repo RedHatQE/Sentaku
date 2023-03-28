@@ -109,7 +109,7 @@ class ImplementationContext:
     def _get_implementation_for(self, key: object) -> ImplementationChoice:
         try:
             implementation_set = self.__combined_registrations[key]
-        except AttributeError:
+        except (AttributeError, KeyError):
             combined: dict[object, dict[object, object]] = {}
             context_cls: type[ImplementationContext]
             for context_cls in reversed(type(self).__mro__):
