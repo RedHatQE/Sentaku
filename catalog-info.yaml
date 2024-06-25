@@ -21,5 +21,5 @@ metadata:
     github.com/project-slug: RedhatQE/Sentaku
     # backstage.io/techdocs-ref: < dir:location where docs dir and mkdocs.yml reside e.g . OR ./sub-folder no space after dir:>
 spec:
-  owner: user:rpfannsc
+  owner: user:redhat/rpfannsc
   domain: quality-community/quality-community
