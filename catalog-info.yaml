@@ -1,6 +1,6 @@
 ---
 apiVersion: backstage.io/v1alpha1
-kind: System
+kind: Component
 metadata:
   name: Sentaku
   description: Model Applications under Test using python for e2e testing
