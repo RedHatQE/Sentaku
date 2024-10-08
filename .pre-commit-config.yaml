@@ -4,7 +4,10 @@ repos:
       rev: v3.9.0
       hooks:
           - id: reorder-python-imports
-            args: [--application-directories=.:examples:src, --py38-plus]
+            args:
+                - --application-directories=.:examples:src
+                - --py38-plus
+
     - repo: https://github.com/psf/black
       rev: 23.1.0
       hooks:
@@ -43,3 +46,16 @@ repos:
       rev: 0.9.1
       hooks:
           - id: pyproject-fmt
+
+    # Backstage linter
+    - repo: local
+      hooks:
+          - id: backstage-entity-validator
+            name: backstage-entity-validator
+            language: system
+            files: catalog-info\.yaml$
+            entry: npx @roadiehq/backstage-entity-validator validate-entity
+            exclude: |
+                (?x)^(
+                  user_repo.*
+                )$

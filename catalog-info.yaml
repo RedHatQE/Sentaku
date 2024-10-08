@@ -2,24 +2,26 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: Sentaku
-  description: Model Applications under Test using python for e2e testing
-  links:
-    - title: docs
-      url: https://sentaku.readthedocs.io/
-      icon: docs
-    - title: code
-      url: https://github.com/RedhatQE/Sentaku
-      icon: github
-    - title: pypi
-      url: https://pypi.org/project/sentaku/
-  tags:
-    - test-framework
-    - python
-  namespace: quality-community
-  annotations:
-    github.com/project-slug: RedhatQE/Sentaku
+    name: Sentaku
+    description: Model Applications under Test using python for e2e testing
+    links:
+        - title: docs
+          url: https://sentaku.readthedocs.io/
+          icon: docs
+        - title: code
+          url: https://github.com/RedhatQE/Sentaku
+          icon: github
+        - title: pypi
+          url: https://pypi.org/project/sentaku/
+    tags:
+        - test-framework
+        - python
+    namespace: quality-community
+    annotations:
+        github.com/project-slug: RedhatQE/Sentaku
     # backstage.io/techdocs-ref: < dir:location where docs dir and mkdocs.yml reside e.g . OR ./sub-folder no space after dir:>
 spec:
-  owner: user:redhat/rpfannsc
-  domain: quality-community/quality-community
+    type: component
+    lifecycle: production
+    owner: user:redhat/rpfannsc
+    domain: quality-community/quality-community
