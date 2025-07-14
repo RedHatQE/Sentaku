@@ -1,11 +1,8 @@
-from typing import Any
+from typing import Any, assert_type
 
 import attr
-from typing_extensions import assert_type
 
-from sentaku import ContextualMethod
-from sentaku import ContextualProperty
-from sentaku import Element
+from sentaku import ContextualMethod, ContextualProperty, Element
 
 
 @attr.s

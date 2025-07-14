@@ -1,8 +1,7 @@
 import pytest
 
 from todo_example import api as todo_api
-from todo_example import pseudorpc
-from todo_example import spec
+from todo_example import pseudorpc, spec
 from todo_example import ux as todo_ux
 
 

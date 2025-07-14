@@ -2,29 +2,17 @@ from __future__ import annotations
 
 import contextlib
 import warnings
-from typing import Any
-from typing import Callable
-from typing import cast
-from typing import ClassVar
-from typing import Generic
-from typing import Iterator
-from typing import Mapping
-from typing import overload
-from typing import Protocol
-from typing import Sequence
-from typing import TypeVar
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from typing import Any, ClassVar, Generic, Protocol, Self, TypeVar, cast, overload
 
 import attr
-from typing_extensions import Self
 
-from .chooser import ChooserStack
-from .chooser import ImplementationChoice
+from .chooser import ChooserStack, ImplementationChoice
 
 
 class HasContext(Protocol):
     @property
-    def context(self) -> ImplementationContext:
-        ...
+    def context(self) -> ImplementationContext: ...
 
 
 METHOD_DATA_KEY = "sentaku_method_data"
@@ -208,14 +196,12 @@ class ContextualMethod:
         return "<ContextualMethod>"
 
     @overload
-    def __get__(self, instance: None, owner: type[object]) -> ContextualMethod:
-        ...
+    def __get__(self, instance: None, owner: type[object]) -> ContextualMethod: ...
 
     @overload
     def __get__(
         self, instance: object, owner: type[object]
-    ) -> _ImplementationBindingMethod:
-        ...
+    ) -> _ImplementationBindingMethod: ...
 
     def __get__(
         self, instance: object | None, owner: object
@@ -248,12 +234,10 @@ class ContextualProperty(Generic[T]):
             bound_method(value)
 
     @overload
-    def __get__(self, instance: None, owner: object) -> Self:
-        ...
+    def __get__(self, instance: None, owner: object) -> Self: ...
 
     @overload
-    def __get__(self, instance: HasContext, owner: object) -> Any:
-        ...
+    def __get__(self, instance: HasContext, owner: object) -> Any: ...
 
     def __get__(self, instance: HasContext | None, owner: object) -> Any | Self:
         if instance is None:

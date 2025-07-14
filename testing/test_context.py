@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from typing import cast
-from typing import Union
 
 import pytest
 
 from sentaku import Element
-from sentaku.context import ContextualMethod
-from sentaku.context import ContextualProperty
-from sentaku.context import ImplementationContext
+from sentaku.context import ContextualMethod, ContextualProperty, ImplementationContext
 
 
 def test_from_instances() -> None:
@@ -23,7 +20,7 @@ class LocalContext(ImplementationContext):
 
 class LocalElement(Element):
     method = ContextualMethod()
-    prop = ContextualProperty[Union[int, str]]()
+    prop = ContextualProperty[int | str]()
 
 
 @LocalContext.external_for(LocalElement.method, int)
@@ -80,7 +77,9 @@ def test_method(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
         elem.method()
 
 
-def test_delayed_register_method(ctx: LocalContext, elem: LocalElement, impl: type) -> None:
+def test_delayed_register_method(
+    ctx: LocalContext, elem: LocalElement, impl: type
+) -> None:
     with ctx.use(impl):
         # Call a registered contextual method
         elem.method()
@@ -91,9 +90,12 @@ def test_delayed_register_method(ctx: LocalContext, elem: LocalElement, impl: ty
 
         @LocalContext.external_for(NewLocalElement.new_method, int)
         @LocalContext.external_for(NewLocalElement.new_method, str)
-        def new_method_standin(self: NewLocalElement, value: int | str | None = None) -> int:
+        def new_method_standin(
+            self: NewLocalElement, value: int | str | None = None
+        ) -> int:
             assert (
-                self.context.implementation_chooser.current.frozen == self.context.strict_calls
+                self.context.implementation_chooser.current.frozen
+                == self.context.strict_calls
             )
             return 1
 
@@ -102,4 +104,3 @@ def test_delayed_register_method(ctx: LocalContext, elem: LocalElement, impl: ty
         new_elem.method()
         new_elem.new_method()
         elem.method()
-

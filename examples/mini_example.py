@@ -1,12 +1,13 @@
 #!env python
 """
-  Sentaku pypi search exampple
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sentaku pypi search exampple
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  before running::
+before running::
 
-    $ pip install selenium  requests sentaku
+  $ pip install selenium  requests sentaku
 """
+
 from __future__ import annotations
 
 import argparse

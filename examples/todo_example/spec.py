@@ -3,6 +3,7 @@ from __future__ import annotations
 import attr
 
 import sentaku
+
 from .api import TodoApp
 from .pseudorpc import PseudoRpc
 from .ux import TodoUX
