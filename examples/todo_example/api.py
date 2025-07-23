@@ -31,7 +31,7 @@ def get_by(self: Iterator[HasName], name: str) -> HasName | None:
         return None
 
 
-def create_by_name(cls: type[T], collection_name: str) -> Callable[[Any, str], T]:
+def create_by_name[T](cls: type[T], collection_name: str) -> Callable[[Any, str], T]:
     def create_item(self: Any, name: str) -> T:
         assert self.get_by(name) is None
         item = cls(name=name)  # type: ignore  [call-arg]

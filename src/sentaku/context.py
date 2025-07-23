@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 import warnings
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from typing import Any, ClassVar, Generic, Protocol, Self, TypeVar, cast, overload
+from typing import Any, ClassVar, Protocol, Self, TypeVar, cast, overload
 
 import attr
 
@@ -211,7 +211,7 @@ class ContextualMethod:
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty(Generic[T]):
+class ContextualProperty[T]:
     name: str
 
     def __set_name__(self, owner: object, name: str) -> None:
