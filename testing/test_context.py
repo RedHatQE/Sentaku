@@ -5,7 +5,9 @@ from typing import cast
 import pytest
 
 from sentaku import Element
-from sentaku.context import ContextualMethod, ContextualProperty, ImplementationContext
+from sentaku.context import ContextualMethod
+from sentaku.context import ContextualProperty
+from sentaku.context import ImplementationContext
 
 
 def test_from_instances() -> None:

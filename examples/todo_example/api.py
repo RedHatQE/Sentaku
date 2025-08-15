@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
-from typing import Any, Protocol, TypeVar
+from collections.abc import Callable
+from collections.abc import Iterator
+from typing import Any
+from typing import Protocol
+from typing import TypeVar
 
 import attr
 

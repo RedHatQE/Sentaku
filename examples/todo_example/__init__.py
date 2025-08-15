@@ -1,3 +1,4 @@
-from . import pseudorpc, spec
+from . import pseudorpc
+from . import spec
 
 __all__ = ("pseudorpc", "spec")

@@ -2,12 +2,22 @@ from __future__ import annotations
 
 import contextlib
 import warnings
-from collections.abc import Callable, Iterator, Mapping, Sequence
-from typing import Any, ClassVar, Protocol, Self, TypeVar, cast, overload
+from collections.abc import Callable
+from collections.abc import Iterator
+from collections.abc import Mapping
+from collections.abc import Sequence
+from typing import Any
+from typing import ClassVar
+from typing import Protocol
+from typing import Self
+from typing import TypeVar
+from typing import cast
+from typing import overload
 
 import attr
 
-from .chooser import ChooserStack, ImplementationChoice
+from .chooser import ChooserStack
+from .chooser import ImplementationChoice
 
 
 class HasContext(Protocol):

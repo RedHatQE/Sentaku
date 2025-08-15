@@ -92,6 +92,8 @@ lint.select = [
   "UP", # pyupgrade
   "W",  # pycodestyle warnings
 ]
+lint.isort.force-single-line = true
+
 lint.isort.known-first-party = [ "sentaku" ]
 
 [tool.pytest.ini_options]

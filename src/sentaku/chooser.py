@@ -8,9 +8,14 @@ context roots and help picking implementations
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Iterator
+from collections.abc import Mapping
+from collections.abc import Sequence
 from contextlib import contextmanager
-from typing import Any, ClassVar, NamedTuple, NoReturn
+from typing import Any
+from typing import ClassVar
+from typing import NamedTuple
+from typing import NoReturn
 
 LIMIT = 20
 
