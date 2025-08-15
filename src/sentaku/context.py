@@ -2,20 +2,19 @@ from __future__ import annotations
 
 import contextlib
 import warnings
+from collections.abc import Callable
+from collections.abc import Iterator
+from collections.abc import Mapping
+from collections.abc import Sequence
 from typing import Any
-from typing import Callable
-from typing import cast
 from typing import ClassVar
-from typing import Generic
-from typing import Iterator
-from typing import Mapping
-from typing import overload
 from typing import Protocol
-from typing import Sequence
+from typing import Self
 from typing import TypeVar
+from typing import cast
+from typing import overload
 
 import attr
-from typing_extensions import Self
 
 from .chooser import ChooserStack
 from .chooser import ImplementationChoice
@@ -23,8 +22,7 @@ from .chooser import ImplementationChoice
 
 class HasContext(Protocol):
     @property
-    def context(self) -> ImplementationContext:
-        ...
+    def context(self) -> ImplementationContext: ...
 
 
 METHOD_DATA_KEY = "sentaku_method_data"
@@ -208,14 +206,12 @@ class ContextualMethod:
         return "<ContextualMethod>"
 
     @overload
-    def __get__(self, instance: None, owner: type[object]) -> ContextualMethod:
-        ...
+    def __get__(self, instance: None, owner: type[object]) -> ContextualMethod: ...
 
     @overload
     def __get__(
         self, instance: object, owner: type[object]
-    ) -> _ImplementationBindingMethod:
-        ...
+    ) -> _ImplementationBindingMethod: ...
 
     def __get__(
         self, instance: object | None, owner: object
@@ -225,7 +221,7 @@ class ContextualMethod:
         return _ImplementationBindingMethod(instance=instance, selector=self)
 
 
-class ContextualProperty(Generic[T]):
+class ContextualProperty[T]:
     name: str
 
     def __set_name__(self, owner: object, name: str) -> None:
@@ -248,12 +244,10 @@ class ContextualProperty(Generic[T]):
             bound_method(value)
 
     @overload
-    def __get__(self, instance: None, owner: object) -> Self:
-        ...
+    def __get__(self, instance: None, owner: object) -> Self: ...
 
     @overload
-    def __get__(self, instance: HasContext, owner: object) -> Any:
-        ...
+    def __get__(self, instance: HasContext, owner: object) -> Any: ...
 
     def __get__(self, instance: HasContext | None, owner: object) -> Any | Self:
         if instance is None:

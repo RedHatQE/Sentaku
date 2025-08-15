@@ -1,7 +1,7 @@
 from typing import Any
+from typing import assert_type
 
 import attr
-from typing_extensions import assert_type
 
 from sentaku import ContextualMethod
 from sentaku import ContextualProperty

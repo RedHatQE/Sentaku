@@ -5,18 +5,17 @@ and fallback preferences
 based on the contexts pushed/poped from the stack it will choose
 context roots and help picking implementations
 """
+
 from __future__ import annotations
 
+from collections.abc import Iterator
+from collections.abc import Mapping
+from collections.abc import Sequence
 from contextlib import contextmanager
 from typing import Any
-from typing import Iterator
-from typing import Mapping
+from typing import ClassVar
 from typing import NamedTuple
 from typing import NoReturn
-from typing import Sequence
-from typing import Union
-
-from typing_extensions import TypeAlias
 
 LIMIT = 20
 
@@ -57,14 +56,14 @@ class Chooser(NamedTuple):
 
 
 class NullChooser:
-    frozen = False
+    frozen: ClassVar[bool] = False
     elements = ()
 
     def choose(self, *_: object, **__: object) -> NoReturn:
         raise LookupError("No choice possible without valid context")
 
 
-CHOOSER: TypeAlias = Union[NullChooser, Chooser]
+type CHOOSER = NullChooser | Chooser
 
 
 def chain(chooser: CHOOSER) -> list[Chooser]:
@@ -85,7 +84,7 @@ class ChooserStack:
         self.current = NullChooser()
 
         if default_elements is not None:
-            if isinstance(default_elements, (Chooser, NullChooser)):
+            if isinstance(default_elements, (Chooser | NullChooser)):
                 self.current = default_elements
             elif isinstance(default_elements, ChooserStack):
                 self.current = default_elements.current

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from collections.abc import Iterator
 from typing import Any
-from typing import Callable
-from typing import Iterator
 from typing import Protocol
 from typing import TypeVar
 
@@ -34,7 +34,7 @@ def get_by(self: Iterator[HasName], name: str) -> HasName | None:
         return None
 
 
-def create_by_name(cls: type[T], collection_name: str) -> Callable[[Any, str], T]:
+def create_by_name[T](cls: type[T], collection_name: str) -> Callable[[Any, str], T]:
     def create_item(self: Any, name: str) -> T:
         assert self.get_by(name) is None
         item = cls(name=name)  # type: ignore  [call-arg]

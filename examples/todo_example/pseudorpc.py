@@ -1,6 +1,7 @@
 """
 a hideous rpc interface used to demonstrate partial implementation
 """
+
 from __future__ import annotations
 
 from typing import Any
